@@ -1,0 +1,579 @@
+{
+    "vitals": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "model",
+            "label": "HR",
+            "name": "ecg",
+            "property": "heart_rate",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "SAT",
+            "name": "AA",
+            "property": "so2",
+            "multiplier": 100,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "SYST",
+            "name": "AA",
+            "property": "pres_max",
+            "multiplier": 1,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "DIAST",
+            "name": "AA",
+            "property": "pres_min",
+            "multiplier": 1,
+            "offset": 0.0
+        },
+        {
+            "type": "model",
+            "label": "RR",
+            "name": "breathing",
+            "property": "measured_spont_breath_freq",
+            "multiplier": 1,
+            "offset": 0.0
+        }
+    ],
+    "default": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "AORTA",
+            "name": "AA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        }
+    ],
+    "circulation": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LV output",
+            "name": "LV_AA",
+            "property": "average_flow",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RV output",
+            "name": "RV_PA",
+            "property": "average_flow",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "SVC flow",
+            "name": "SVC_RA",
+            "property": "average_flow",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "IVC flow",
+            "name": "IVC_RA",
+            "property": "average_flow",
+            "multiplier": 1.0,
+            "offset": 0.0
+        }
+    ],
+    "leftHeart": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LVP",
+            "name": "LV",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LAP",
+            "name": "LA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "AORTA",
+            "name": "AA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LV vol",
+            "name": "LV",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        }
+    ],
+    "rightHeart": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RVP",
+            "name": "RV",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RAP",
+            "name": "RA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "PULM ARTERY",
+            "name": "PA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RV vol",
+            "name": "RV",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        }
+    ],
+    "leftVentriclePVLoop": [
+        {
+            "type": "component",
+            "label": "LV",
+            "name": "LV",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LVP",
+            "name": "LV",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "rightVentriclePVLoop": [
+        {
+            "type": "component",
+            "label": "RV",
+            "name": "RV",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RVP",
+            "name": "RV",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "leftAtriumPVLoop": [
+        {
+            "type": "component",
+            "label": "LA",
+            "name": "LA",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LAP",
+            "name": "LA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "rightAtriumPVLoop": [
+        {
+            "type": "component",
+            "label": "RA",
+            "name": "RA",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "RAP",
+            "name": "RA",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "lungPressures": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LL pres",
+            "name": "ALL",
+            "property": "pres_current",
+            "multiplier": 1,
+            "offset": -760
+        },
+        {
+            "type": "component",
+            "label": "RL pres",
+            "name": "ALR",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": -760
+        }
+    ],
+    "lungVolumes": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LL vol",
+            "name": "ALL",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "RL vol",
+            "name": "ALR",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        }
+    ],
+    "lungFlows": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "LL flow",
+            "name": "NCA_ALL",
+            "property": "real_flow",
+            "multiplier": 1,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "RL flow",
+            "name": "NCA_ALR",
+            "property": "real_flow",
+            "multiplier": 1.0,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "AIRWAYS flow",
+            "name": "OUT_NCA",
+            "property": "real_flow",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "lungPressureVolume": [
+        {
+            "type": "component",
+            "label": "NCA",
+            "name": "NCA",
+            "property": "pres_current",
+            "multiplier": 1,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "LL pres",
+            "name": "ALL",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "RL pres",
+            "name": "ALR",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        }
+    ],
+    "lungflowVolumeLeft": [
+        {
+            "type": "component",
+            "label": "LL",
+            "name": "ALL",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "LL flow",
+            "name": "NCA_ALL",
+            "property": "real_flow",
+            "multiplier": 1000,
+            "offset": 0
+        }
+    ],
+    "lungflowVolumeRight": [
+        {
+            "type": "component",
+            "label": "RL",
+            "name": "ALR",
+            "property": "vol_current",
+            "multiplier": 1000,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "RL flow",
+            "name": "NCA_ALR",
+            "property": "real_flow",
+            "multiplier": 1000,
+            "offset": 0
+        }
+    ],
+    "arterial_bloodgas": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "pO2",
+            "name": "AA",
+            "property": "po2",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "sO2",
+            "name": "AA",
+            "property": "so2",
+            "multiplier": 100,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "pCO2",
+            "name": "AA",
+            "property": "pco2",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "pH (*10)",
+            "name": "AA",
+            "property": "ph",
+            "multiplier": 10.0,
+            "offset": 0.0
+        }
+    ],
+    "ventilatorAll": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "model",
+            "label": "volume (ml)",
+            "name": "ventilator",
+            "property": "volume",
+            "multiplier": 1000,
+            "offset": 0
+        },
+        {
+            "type": "model",
+            "label": "pressure (cmH2O)",
+            "name": "ventilator",
+            "property": "pressure",
+            "multiplier": 1,
+            "offset": 0
+        },
+        {
+            "type": "model",
+            "label": "flow ml/sec (* 0.1)",
+            "name": "ventilator",
+            "property": "flow",
+            "multiplier": 100,
+            "offset": 0
+        },
+        {
+            "type": "model",
+            "label": "tidal volume (ml)",
+            "name": "ventilator",
+            "property": "exhaled_tidal_volume",
+            "multiplier": 1000,
+            "offset": 0
+        }
+
+
+        
+
+    ],
+    "ventilatorPressures": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+        {
+            "type": "component",
+            "label": "TUBINGIN",
+            "name": "TUBINGIN",
+            "property": "pres_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ],
+    "ventilatorFlows": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+
+        {
+            "type": "component",
+            "label": "YPIECE_NCA",
+            "name": "YPIECE_NCA",
+            "property": "real_flow",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+        
+    ],
+    "ventilatorVolumes": [
+        {
+            "type": "time",
+            "label": "time",
+            "name": "time",
+            "property": "",
+            "multiplier": 1.0,
+            "offset": 0.0
+        },
+
+        {
+            "type": "component",
+            "label": "TUBINGIN",
+            "name": "TUBINGIN",
+            "property": "vol_current",
+            "multiplier": 1.0,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "YPIECE",
+            "name": "YPIECE",
+            "property": "vol_current",
+            "multiplier": 1.0,
+            "offset": 0
+        },
+        {
+            "type": "component",
+            "label": "TUBINGOUT",
+            "name": "TUBINGOUT",
+            "property": "vol_current",
+            "multiplier": 1.0,
+            "offset": 0
+        }
+    ]
+
+
+}

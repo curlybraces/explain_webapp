@@ -1,0 +1,203 @@
+{
+    "changeLungCompliance": [
+        {
+            "type": "component",
+            "name": "ALL",
+            "label": "change elastance",
+            "property_type": "number",
+            "property": "el_baseline_factor",
+            "target": 5,
+            "in_time": 10.0,
+            "at_time": 5.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "ALR",
+            "label": "change elastance",
+            "property_type": "number",
+            "property": "el_baseline_factor",
+            "target": 5,
+            "in_time": 10.0,
+            "at_time": 5.0,
+            "started": false,
+            "completed": false
+        }
+    ],
+    "stopBreathing": [
+        {
+            "type": "model",
+            "name": "breathing",
+            "label": "stop breathing",
+            "property_type": "boolean",
+            "property": "spont_breathing_enabled",
+            "target": false,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        }
+    ],
+    "startVentilator": [
+        {
+            "type": "model",
+            "name": "breathing",
+            "label": "stop breathing",
+            "property_type": "boolean",
+            "property": "spont_breathing_enabled",
+            "target": false,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "model",
+            "name": "ventilator",
+            "label": "start ventilator",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "OUT_NCA",
+            "label": "OUT_NCA",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "no_flow": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "VENTIN",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "VENTOUT",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "TUBINGIN",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "TUBINGOUT",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "YPIECE",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "VENTIN_TUBINGIN",
+            "label": "NCA_OUT",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "TUBINGIN_YPIECE",
+            "label": "NCA_OUT",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "YPIECE_NCA",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "YPIECE_TUBINGOUT",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        },
+        {
+            "type": "component",
+            "name": "TUBINGOUT_VENTOUT",
+            "label": "",
+            "property_type": "boolean",
+            "property": "is_enabled",
+            "target": true,
+            "in_time": 1.0,
+            "at_time": 1.0,
+            "started": false,
+            "completed": false
+        }
+    ]
+
+
+
+}
