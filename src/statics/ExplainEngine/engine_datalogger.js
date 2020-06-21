@@ -224,6 +224,10 @@ class Datalogger {
     });
     return header;
   }
+
+  
+
+  }
   modelStep(_current_model_time, annotations) {
     // has the datalogger time interval elapsed? then store the data in the data list
     if (this.datalogger_timer_custom >= this.interval_custom) {
