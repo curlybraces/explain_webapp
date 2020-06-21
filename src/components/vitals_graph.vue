@@ -9,6 +9,7 @@
 
     <button @click="startModel">START</button>
     <button @click="stopModel">STOP</button>
+    <button @click="resetGraph">RESET</button>
   </div>
 </template>
 
@@ -63,7 +64,7 @@ export default {
       "message",
       _message => {
         if (_message.data.type === "state") {
-          this.processVitals(_message.data.data);
+          this.processData(_message.data.data);
         }
       }
     );
@@ -75,9 +76,19 @@ export default {
     this.$model.modelEngine.removeEventListener(this.event_listener);
   },
   methods: {
-    processVitals(_data) {
+    resetGraph() {
+      this.chart_frame_full = false;
+      this.data = []
+      this.chart_data = []
+      this.chart_data.push(this.chart_header)
+      this.data_update_counter = 0
+      this.chart_update_counter = 0
+      this.chart_frame_counter = 0
+    },
+    processData(_data) {
       if (this.chart_visible) {    
 
+        // is it time to update the dataset?
         if (this.data_update_counter > this.data_update_interval)
         {
           this.data_update_counter = 0
@@ -87,6 +98,7 @@ export default {
           _data.breathing.measured_spont_breath_freq])
         }
 
+        // is it time to draw the graph
         if (this.chart_update_counter > this.chart_update_interval)
         {
           this.chart_update_counter = 0
@@ -99,7 +111,7 @@ export default {
           this.data = []
         }
 
-        // check whether the dataframe is reached
+        // check whether the chart data frame is reached
         if (this.chart_frame_counter > this.chart_frame_size) {
           this.chart_frame_full = true
         }
