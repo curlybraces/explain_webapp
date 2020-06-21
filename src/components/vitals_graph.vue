@@ -24,8 +24,15 @@ export default {
       visible: true,
       color: "positive",
       buttonText: "hide",
+      data_update_counter : 0,
+      data_update_interval : 0.03,
+      data_frame_size : 5,
+      chart_update_counter : 0,
+      chart_update_interval : 0.1,
+      data: [],
       chart_visible: true,
-      chart_data: {},
+      chart_header: ['time', 'HR', 'SAT', 'SYST', 'DIAST', 'RR'],
+      chart_data: [],
       chart_options: {
         legend: { position: "bottom", alignment: "start" },
         explorer: {
@@ -51,20 +58,45 @@ export default {
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
-        if (_message.data.type === "vitals") {
+        if (_message.data.type === "state") {
           this.processVitals(_message.data.data);
         }
       }
     );
+
+    this.chart_data.push(this.chart_header)
+
   },
   beforeDestroy() {
     this.$model.modelEngine.removeEventListener(this.event_listener);
   },
   methods: {
     processVitals(_data) {
-      if (this.chart_visible) {
-        this.chart_data = _data;
+      if (this.chart_visible) {    
+
+        if (this.data_update_counter > this.data_update_interval)
+        {
+          this.data_update_counter = 0
+          this.data.push([_data.time, _data.ecg.heart_rate, 
+          _data.AA.so2 * 100, _data.AA.pres_current, 
+          _data.AA.pres_min, 
+          _data.breathing.measured_spont_breath_freq])
+        }
+
+        if (this.chart_update_counter > this.chart_update_interval)
+        {
+          this.chart_update_counter = 0
+          this.data.forEach( p => {
+            this.chart_data.push(p)
+          })
+          this.data = []
+        }
+
+        this.data_update_counter += _data.interval
+        this.chart_update_counter += _data.interval
       }
+
+
     },
     startModel() {
       this.$model.sendMessageToModelEngine({

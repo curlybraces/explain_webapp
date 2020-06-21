@@ -32,6 +32,8 @@ class Datalogger {
     // first entry is the time
     model_state["time"] = _current_model_time;
     model_state["annotation"] = annotation;
+    model_state["interval"] = this.model.modeling_interval;
+    model_state["stepsize"] = this.model.modeling_stepsize;
 
     // iterate over all components
     Object.keys(this.model.components).forEach((key) => {
