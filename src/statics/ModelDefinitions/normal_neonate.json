@@ -5,13 +5,14 @@
   "weight": 3.3,
   "modeling_interval": 0.015,
   "modeling_stepsize": 0.0005,
+
   "metabolism": {
     "name": "metabolism",
     "type": "model",
     "subtype": "",
     "info": "",
     "is_enabled": true,
-    "atp_need": 0.10,
+    "atp_need": 0.1,
     "resp_q": 0.8,
     "p_atm": 760.0,
     "outside_temp": 20.0,
@@ -49,7 +50,7 @@
     "vent_qrs_wave": [-25, 20, 50, -150, 20, 20, 20, 15, 10, 10, 10]
   },
   "heart": {
-    "name": "breathing",
+    "name": "heart",
     "type": "model",
     "subtype": "",
     "info": "",
@@ -88,7 +89,7 @@
     "exp_flow": 8.0,
     "t_in": 0.4,
     "t_ex": 1.5,
-    "cycling_mode" : "time",
+    "cycling_mode": "time",
     "ventilator_mode": "pressure",
     "volume_garanteed": false,
     "insp_hold": false,
@@ -100,9 +101,9 @@
     "subtype": "",
     "info": "",
     "is_enabled": true,
-    "th_lungvol": 0.040,
-    "op_lungvol": 0.050,
-    "sa_lungvol": 0.060,
+    "th_lungvol": 0.04,
+    "op_lungvol": 0.05,
+    "sa_lungvol": 0.06,
     "th_map": 40.0,
     "op_map": 57.0,
     "sa_map": 70.0,
@@ -127,7 +128,7 @@
     "tc_ph_ve": 2.0,
     "tc_lungvol_hp": 20.0,
     "g_po2_ve": -0.0067,
-    "g_ph_ve": 0.450,
+    "g_ph_ve": 0.45,
     "g_ph_hp": 0.0,
     "g_pco2_ve": 0.025,
     "g_pco2_hp": 0.0,
@@ -195,14 +196,15 @@
     "info": "",
     "is_enabled": true
   },
-  "blood_compartment_definitions": [{
+  "blood_compartment_definitions": [
+    {
       "name": "PA",
       "type": "component",
       "subtype": "blood_compartment",
       "is_enabled": true,
       "info": "",
-      "vol_unstressed": 0.020,
-      "vol_unstressed_baseline": 0.020,
+      "vol_unstressed": 0.02,
+      "vol_unstressed_baseline": 0.02,
       "vol_current": 0.027,
       "vol_current_baseline": 0.027,
       "el_current": 4000.0,
@@ -441,8 +443,8 @@
       "subtype": "blood_compartment",
       "info": "",
       "is_enabled": true,
-      "vol_unstressed": 0.0150,
-      "vol_unstressed_baseline": 0.0150,
+      "vol_unstressed": 0.015,
+      "vol_unstressed_baseline": 0.015,
       "vol_current": 0.02086,
       "vol_current_baseline": 0.02086,
       "el_current": 2142,
@@ -771,8 +773,8 @@
       "type": "component",
       "subtype": "blood_compartment",
       "info": "",
-      "vol_unstressed": 0.0050,
-      "vol_unstressed_baseline": 0.0050,
+      "vol_unstressed": 0.005,
+      "vol_unstressed_baseline": 0.005,
       "vol_current": 0.00515,
       "vol_current_baseline": 0.00516,
       "el_current": 55560,
@@ -856,7 +858,8 @@
       "el_k2_factor": 1.0
     }
   ],
-  "blood_connector_definitions": [{
+  "blood_connector_definitions": [
+    {
       "name": "AA_AD",
       "type": "component",
       "subtype": "blood_connector",
@@ -1495,7 +1498,8 @@
       "in_k2_factor": 1.0
     }
   ],
-  "valve_definitions": [{
+  "valve_definitions": [
+    {
       "name": "RA_RV",
       "type": "component",
       "subtype": "valve",
@@ -1672,7 +1676,8 @@
       "in_k2_factor": 1.0
     }
   ],
-  "shunt_definitions": [{
+  "shunt_definitions": [
+    {
       "name": "OFO",
       "type": "component",
       "subtype": "shunt",
@@ -1805,7 +1810,8 @@
       "in_k2_factor": 1.0
     }
   ],
-  "gas_compartment_definitions": [{
+  "gas_compartment_definitions": [
+    {
       "name": "OUT",
       "type": "component",
       "subtype": "gas_compartment",
@@ -1993,9 +1999,9 @@
       "is_enabled": true,
       "pressure_limited": true,
       "vol_unstressed": 0.01,
-      "vol_unstressed_baseline": 0.010,
+      "vol_unstressed_baseline": 0.01,
       "vol_current": 0.01,
-      "vol_current_baseline": 0.010,
+      "vol_current_baseline": 0.01,
       "el_current": 5000,
       "el_baseline": 5000,
       "el_min_volume": -1000.0,
@@ -2075,10 +2081,10 @@
       "el_max_volume_factor": 1.0,
       "el_k1_factor": 1.0,
       "el_k2_factor": 1.0
-
     }
   ],
-  "gas_connector_definitions": [{
+  "gas_connector_definitions": [
+    {
       "name": "OUT_NCA",
       "type": "component",
       "subtype": "gas_connector",
@@ -2099,8 +2105,6 @@
       "in_baseline_factor": 1.0,
       "in_k1_factor": 1.0,
       "in_k2_factor": 1.0
-
-
     },
     {
       "name": "NCA_ALL",
@@ -2279,7 +2283,8 @@
       "in_k2_factor": 1.0
     }
   ],
-  "container_definitions": [{
+  "container_definitions": [
+    {
       "name": "PERICARDIUM",
       "type": "component",
       "subtype": "container",
@@ -2308,7 +2313,18 @@
       "type": "component",
       "subtype": "container",
       "info": "",
-      "compartments": ["LL", "LR", "PA", "PV", "AA", "MYO", "RA", "RV", "LA", "LV"],
+      "compartments": [
+        "LL",
+        "LR",
+        "PA",
+        "PV",
+        "AA",
+        "MYO",
+        "RA",
+        "RV",
+        "LA",
+        "LV"
+      ],
       "is_enabled": true,
       "vol_unstressed": 0.04,
       "vol_unstressed_baseline": 0.04,
@@ -2376,7 +2392,8 @@
       "el_k2_factor": 1.0
     }
   ],
-  "diffusor_definitions": [{
+  "diffusor_definitions": [
+    {
       "name": "DIFF_OFO",
       "type": "component",
       "subtype": "diffusor",
@@ -2393,7 +2410,6 @@
       "diff_n2_factor": 1.0,
       "diff_other": 0.01,
       "diff_other_factor": 1.0
-
     },
     {
       "name": "DIFF_VSD",
@@ -2432,7 +2448,8 @@
       "diff_other_factor": 1.0
     }
   ],
-  "exchanger_definitions": [{
+  "exchanger_definitions": [
+    {
       "name": "GASEX_LL",
       "type": "component",
       "subtype": "exchanger",

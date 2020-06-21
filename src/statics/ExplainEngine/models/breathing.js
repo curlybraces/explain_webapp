@@ -14,11 +14,10 @@ class Breathing {
     this.breath_timer_period = 0;
     this.breath_timer_counter = 0;
 
-    this.measured_spont_updater_counter = 0
+    this.measured_spont_updater_counter = 0;
 
-    this.measured_spont_breath_counter = 0
-    this.measured_spont_breath_freq = 0
-
+    this.measured_spont_breath_counter = 0;
+    this.measured_spont_breath_freq = 0;
   }
 
   calculateVolumes() {
@@ -44,7 +43,7 @@ class Breathing {
       )
     );
   }
-  
+
   vtrrController() {
     // calculate the spontaneous resp rate depending on the target minute volume (from ANS) and the set vt-rr ratio
     this.spont_resp_rate = Math.sqrt(
@@ -78,16 +77,21 @@ class Breathing {
     }
 
     // calculate the breathing frequency
-    this.measured_spont_breath_freq = 60 / this.measured_spont_breath_counter
-    this.measured_spont_breath_counter = 0
-    this.measured_spont_updater_counter = 0
+    this.measured_spont_breath_freq = 60 / this.measured_spont_breath_counter;
+    this.measured_spont_breath_counter = 0;
+    this.measured_spont_updater_counter = 0;
 
     // reset the breathing timer
     this.breath_timer_counter = 1;
   }
 
   modelStep() {
+    if (this.is_enabled) {
+      this.modelCycle();
+    }
+  }
 
+  modelCycle() {
     // determine the breath timings
     if (this.spont_resp_rate > 0 && this.spont_breathing_enabled) {
       this.breath_timer_period = 60000 / this.spont_resp_rate;
@@ -111,11 +115,17 @@ class Breathing {
     }
 
     // transfer the respiratory muscle force to the chests
-    this.model.components['CHEST_L'].external_pressure = this.resp_muscle_pressure;
-    this.model.components['CHEST_R'].external_pressure = this.resp_muscle_pressure;
+    this.model.components[
+      "CHEST_L"
+    ].external_pressure = this.resp_muscle_pressure;
+    this.model.components[
+      "CHEST_R"
+    ].external_pressure = this.resp_muscle_pressure;
 
     // store the current volumes
-    let volume = this.model.components['ALL'].vol_current + this.model.components['ALR'].vol_current;
+    let volume =
+      this.model.components["ALL"].vol_current +
+      this.model.components["ALR"].vol_current;
     if (volume > this.temp_max_volume) {
       this.temp_max_volume = volume;
     }
@@ -130,14 +140,13 @@ class Breathing {
     }
 
     // increase the measure breathing frequency counter
-    this.measured_spont_breath_counter += this.model.modeling_stepsize
-    this.measured_spont_updater_counter += this.model.modeling_stepsize
+    this.measured_spont_breath_counter += this.model.modeling_stepsize;
+    this.measured_spont_updater_counter += this.model.modeling_stepsize;
 
     if (this.measured_spont_updater_counter > 5) {
-      this.measured_spont_updater_counter = 0
-      this.measured_spont_breath_freq = 60 / this.measured_spont_breath_counter
+      this.measured_spont_updater_counter = 0;
+      this.measured_spont_breath_freq = 60 / this.measured_spont_breath_counter;
     }
-    
 
     // increase the timers
     this.breath_timer_counter += this.model.modeling_stepsize * 1000;

@@ -33,7 +33,6 @@ class ECG {
 
     this.model = _model;
     this.update_timer = 0;
-
   }
 
   qtc() {
@@ -44,13 +43,19 @@ class ECG {
     }
   }
   modelStep() {
-    // the ecg is updated every modeling_interval and not every modeling_stepsize 
+    if (this.is_enabled) {
+      this.modelCycle();
+    }
+  }
+
+  modelCycle() {
+    // the ecg is updated every modeling_interval and not every modeling_stepsize
     // for performance reasons
     if (this.update_timer >= this.model.modeling_interval) {
-      this.update_timer = 0
-      this.updateECG(this.model.modeling_interval)
+      this.update_timer = 0;
+      this.updateECG(this.model.modeling_interval);
     }
-    this.update_timer += this.model.modeling_stepsize
+    this.update_timer += this.model.modeling_stepsize;
   }
 
   updateECG(model_interval) {
@@ -83,7 +88,10 @@ class ECG {
     }
 
     if (this.measured_heartrate_qrs_counter > 5) {
-      this.measured_heartrate = 60 / (this.measured_heartrate_time_counter / this.measured_heartrate_qrs_counter);
+      this.measured_heartrate =
+        60 /
+        (this.measured_heartrate_time_counter /
+          this.measured_heartrate_qrs_counter);
       this.measured_heartrate_qrs_counter = 0;
       this.measured_heartrate_time_counter = 0;
     }
@@ -139,14 +147,14 @@ class ECG {
       this.ecg_signal = 0;
     }
 
-    this.model.models.ecg['ecg_signal'] = this.ecg_signal;
-    this.model.models.ecg['measured_heartrate'] = this.measured_heartrate;
+    this.model.models.ecg["ecg_signal"] = this.ecg_signal;
+    this.model.models.ecg["measured_heartrate"] = this.measured_heartrate;
   }
   buildDynamicPWave() {
-    let duration = this.model.models.ecg['pq_time'];
-    let amp_p = this.model.models.ecg['amp_p'];
-    let width_p = this.model.models.ecg['width_p'];
-    let skew_p = this.model.models.ecg['skew_p'];
+    let duration = this.model.models.ecg["pq_time"];
+    let amp_p = this.model.models.ecg["amp_p"];
+    let width_p = this.model.models.ecg["width_p"];
+    let skew_p = this.model.models.ecg["skew_p"];
 
     let new_p_signal =
       amp_p *
@@ -168,9 +176,9 @@ class ECG {
   }
   buildDynamicTWave() {
     let duration = this.cqt_time;
-    let amp_t = this.model.models.ecg['amp_t'];
-    let width_t = this.model.models.ecg['width_t'];
-    let skew_t = this.model.models.ecg['skew_t'];
+    let amp_t = this.model.models.ecg["amp_t"];
+    let width_t = this.model.models.ecg["width_t"];
+    let skew_t = this.model.models.ecg["skew_t"];
 
     let new_t_signal =
       amp_t *

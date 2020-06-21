@@ -4,15 +4,21 @@ class Exchanger {
   }
 
   modelStep() {
+    if (this.is_enabled) {
+      this.modelCycle();
+    }
+  }
+
+  modelCycle() {
     // calculate the flux
     // diff = mmol / mmHg * sec
     // flux is in mmol !!!
 
-    this.model.acidbase(this.model.components[this.comp_blood], this.model)
-    this.model.oxygenation(this.model.components[this.comp_blood], this.model)
+    this.model.acidbase(this.model.components[this.comp_blood], this.model);
+    this.model.oxygenation(this.model.components[this.comp_blood], this.model);
 
-    let blood_compartment = this.model.components[this.comp_blood]
-    let gas_compartment = this.model.components[this.comp_gas]
+    let blood_compartment = this.model.components[this.comp_blood];
+    let gas_compartment = this.model.components[this.comp_gas];
 
     this.flux_o2 =
       (blood_compartment.po2 - gas_compartment.po2) *
@@ -36,7 +42,8 @@ class Exchanger {
     if (blood_compartment.is_enabled) {
       if (blood_compartment.vol_current > 0) {
         blood_compartment.to2 =
-          (blood_compartment.to2 * blood_compartment.vol_current - this.flux_o2) /
+          (blood_compartment.to2 * blood_compartment.vol_current -
+            this.flux_o2) /
           blood_compartment.vol_current;
 
         if (blood_compartment.to2 < 0) {
@@ -44,7 +51,8 @@ class Exchanger {
         }
 
         blood_compartment.tco2 =
-          (blood_compartment.tco2 * blood_compartment.vol_current - this.flux_co2) /
+          (blood_compartment.tco2 * blood_compartment.vol_current -
+            this.flux_co2) /
           blood_compartment.vol_current;
 
         if (blood_compartment.tco2 < 0) {

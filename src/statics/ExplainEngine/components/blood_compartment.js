@@ -8,21 +8,21 @@ class BloodCompartment {
     this.container_pressure = 0;
 
     // max and min pressures
-    this.pres_max = 0
-    this.pres_max_temp = -1000
+    this.pres_max = 0;
+    this.pres_max_temp = -1000;
 
-    this.pres_min = 0
-    this.pres_min_temp = 1000
+    this.pres_min = 0;
+    this.pres_min_temp = 1000;
 
     // max and min volumes
-    this.vol_max = 0
-    this.vol_max_temp = -1000
+    this.vol_max = 0;
+    this.vol_max_temp = -1000;
 
-    this.vol_min = 0
-    this.vol_min_temp = 1000
+    this.vol_min = 0;
+    this.vol_min_temp = 1000;
 
-    this.analyzer_timer = 0
-    this.analyzer_interval = 3
+    this.analyzer_timer = 0;
+    this.analyzer_interval = 3;
   }
 
   calcElastance() {
@@ -38,7 +38,9 @@ class BloodCompartment {
         this.el_k2 *
           this.el_k2_factor *
           Math.pow(
-            this.vol_current - this.el_max_volume * this.el_max_volume_factor, 3)
+            this.vol_current - this.el_max_volume * this.el_max_volume_factor,
+            3
+          )
       );
     }
 
@@ -49,7 +51,9 @@ class BloodCompartment {
         this.el_k1 *
           this.el_k1_factor *
           Math.pow(
-            this.vol_current - this.el_min_volume * this.el_min_volume_factor, 3)
+            this.vol_current - this.el_min_volume * this.el_min_volume_factor,
+            3
+          )
       );
     }
 
@@ -176,42 +180,44 @@ class BloodCompartment {
 
   analyzePressures() {
     if (this.analyzer_timer > this.analyzer_interval) {
-      this.analyzer_timer = 0
+      this.analyzer_timer = 0;
 
-      this.pres_max = this.pres_max_temp
-      this.pres_min = this.pres_min_temp
+      this.pres_max = this.pres_max_temp;
+      this.pres_min = this.pres_min_temp;
 
-      this.vol_max = this.vol_max_temp
-      this.vol_min = this.vol_min_temp
-      
-      this.pres_max_temp = -1000
-      this.pres_min_temp = 1000
+      this.vol_max = this.vol_max_temp;
+      this.vol_min = this.vol_min_temp;
 
-      this.vol_max_temp = -1000
-      this.vol_min_temp = 1000
+      this.pres_max_temp = -1000;
+      this.pres_min_temp = 1000;
+
+      this.vol_max_temp = -1000;
+      this.vol_min_temp = 1000;
     }
-    if (this.pres_current > this.pres_max_temp){
-      this.pres_max_temp = this.pres_current
+    if (this.pres_current > this.pres_max_temp) {
+      this.pres_max_temp = this.pres_current;
     }
-    if (this.pres_current < this.pres_min_temp){
-      this.pres_min_temp = this.pres_current
+    if (this.pres_current < this.pres_min_temp) {
+      this.pres_min_temp = this.pres_current;
     }
 
-    if (this.vol_current > this.vol_max_temp){
-      this.vol_max_temp = this.vol_current
+    if (this.vol_current > this.vol_max_temp) {
+      this.vol_max_temp = this.vol_current;
     }
-    if (this.vol_current < this.vol_min_temp){
-      this.vol_min_temp = this.vol_current
+    if (this.vol_current < this.vol_min_temp) {
+      this.vol_min_temp = this.vol_current;
     }
-    
-    this.analyzer_timer += this.model.modeling_stepsize
+
+    this.analyzer_timer += this.model.modeling_stepsize;
   }
-  
+
   modelStep() {
     if (this.is_enabled) {
-      this.energyBalance();
+      if (this.model.models.metabolism.is_enabled) {
+        this.energyBalance();
+      }
       this.pres_current = this.calcPressure();
-      this.analyzePressures()
+      this.analyzePressures();
     }
   }
 }
