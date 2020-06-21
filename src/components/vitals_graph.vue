@@ -25,10 +25,14 @@ export default {
       color: "positive",
       buttonText: "hide",
       data_update_counter : 0,
-      data_update_interval : 0.03,
-      data_frame_size : 5,
+      data_update_interval : 1,
+
+      chart_frame_size : 300,
+      chart_frame_counter : 0,
+      chart_frame_full : false,
+
       chart_update_counter : 0,
-      chart_update_interval : 0.1,
+      chart_update_interval : 1,
       data: [],
       chart_visible: true,
       chart_header: ['time', 'HR', 'SAT', 'SYST', 'DIAST', 'RR'],
@@ -78,7 +82,7 @@ export default {
         {
           this.data_update_counter = 0
           this.data.push([_data.time, _data.ecg.heart_rate, 
-          _data.AA.so2 * 100, _data.AA.pres_current, 
+          _data.AA.so2 * 100, _data.AA.pres_max, 
           _data.AA.pres_min, 
           _data.breathing.measured_spont_breath_freq])
         }
@@ -87,13 +91,23 @@ export default {
         {
           this.chart_update_counter = 0
           this.data.forEach( p => {
+            if (this.data_frame_full) {
+              this.chart_data.splice(1, 1)
+            }
             this.chart_data.push(p)
           })
           this.data = []
         }
 
+        // check whether the dataframe is reached
+        if (this.chart_frame_counter > this.chart_frame_size) {
+          this.chart_frame_full = true
+        }
+
+        // increase the counters
         this.data_update_counter += _data.interval
         this.chart_update_counter += _data.interval
+        this.chart_frame_counter += _data.interval
       }
 
 
