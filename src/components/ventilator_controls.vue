@@ -131,12 +131,12 @@ export default {
   methods: {
     updateVentilatorSettings() {
       let controls = {
-        // target_tidal_volume: this.tv / 1000,
-        insp_flow: this.flow
-        // pip: this.pip,
-        // peep: this.peep / 1.35951,
-        // t_in: this.t_in,
-        // t_ex: 60 / this.freq - this.t_in
+        target_tidal_volume: this.tv / 1000,
+        insp_flow: this.flow,
+        //pip: this.pip,
+        peep: this.peep / 1.35951,
+        t_in: this.t_in,
+        t_ex: 60 / this.freq - this.t_in
       };
       this.$model.sendMessageToModelEngine({
         type: "set",
