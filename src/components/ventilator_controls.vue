@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div class="q-gutter-sm q-ma-sm">
+  <div class="q-ma-sm">
+    <div class="row justify-center">
+      <label>VENTILATOR CONTROLS</label>
+    </div>
+    <div class="q-gutter-sm q-mb-md">
       <q-knob
         show-value
         class="text-primary q-ma-md"
@@ -10,6 +13,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -19,23 +23,7 @@
         </div>
       </q-knob>
 
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="mv"
-        :min="min_mv"
-        :max="max_mv"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">minute volume</small>
-          </div>
-          <div>{{ mv }}</div>
-        </div>
-      </q-knob>
+
 
       <q-knob
         show-value
@@ -46,6 +34,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -63,6 +52,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -80,6 +70,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -97,6 +88,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -115,6 +107,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -132,6 +125,7 @@
         size="100px"
         color="primary"
         track-color="grey-3"
+        @change="updateVentilatorSettings"
       >
         <div class="text-center">
           <div>
@@ -141,7 +135,7 @@
         </div>
       </q-knob>
     </div>
-    <q-btn @click="updateVentilatorSettings"> update </q-btn>
+
   </div>
 </template>
 
@@ -181,7 +175,7 @@ export default {
       let controls = {
         target_tidal_volume: this.tv / 1000,
         insp_flow: this.flow,
-        //pip: this.pip,
+        pip: this.pip / 1.35951,
         peep: this.peep / 1.35951,
         t_in: this.t_in,
         t_ex: 60 / this.freq - this.t_in

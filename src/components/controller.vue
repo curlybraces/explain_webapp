@@ -1,5 +1,9 @@
 <template>
-  <div class="q-gutter-xs q-ma-sm">
+<div class="q-ma-sm">
+  <div class="row justify-center">
+    <label>MODEL CONTROLS</label>
+  </div>
+  <div class="q-gutter-xs q-mb-md">
     <q-btn color="negative" icon="play_arrow" @click="startModel" label="" />
     <q-btn color="negative" icon-right="pause" @click="stopModel" label="" />
     <q-btn
@@ -8,6 +12,7 @@
       @click="stopModel"
       label=""
     />
+  </div>
   </div>
 </template>
 

@@ -3,18 +3,18 @@
     <div class="row justify-center">
       <controller></controller>
     </div>
-    <div class="row justify-center">
-      <vitals_table></vitals_table>
+   
+     <div class="row justify-center">
+      <ventilator_controls></ventilator_controls>
     </div>
     <div class="row justify-center">
       <ventilator_graph></ventilator_graph>
     </div>
-    <div class="row justify-center">
+     <div class="row justify-center">
       <ventilation_table></ventilation_table>
     </div>
-    <div class="row justify-center">
-      <ventilator_controls></ventilator_controls>
-    </div>
+    
+   
   </q-page>
 </template>
 
@@ -30,7 +30,7 @@ export default {
   components: {
     ventilator_controls,
     ventilation_table,
-    vitals_table,
+   
     ventilator_graph,
     controller
   }

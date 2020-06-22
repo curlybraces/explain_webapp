@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-sm">
     <q-table
+      :table-header-style="{ backgroundColor: '#000000', color: '#ffffff' }"
       title=""
       dense
       hide-bottom
