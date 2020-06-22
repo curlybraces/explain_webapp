@@ -54,7 +54,7 @@ let measured_model_interval;
 let model_performance = 0;
 
 // attach an event handler to receive messages from the UI thread.
-onmessage = function (e) {
+onmessage = function(e) {
   switch (e.data.type) {
     case "cmd":
       if (e.data.subtype === "set_id") {
@@ -84,6 +84,17 @@ onmessage = function (e) {
       if (e.data.subtype === "set_interventions") {
         engine_interventions.setInterventions(e.data.data);
       }
+      if (e.data.subtype === "model_settings") {
+        Object.keys(e.data.data).forEach(setting => {
+          current_model.models[e.data.target][setting] = e.data.data[setting];
+        });
+      }
+      if (e.data.subtype === "component_settings") {
+        Object.keys(e.data.data).forEach(setting => {
+          current_model.components[e.data.target][setting] =
+            e.data.data[setting];
+        });
+      }
       break;
 
     default:
@@ -99,18 +110,18 @@ onmessage = function (e) {
 };
 
 // routine to send messages to the UI thread
-const SendMessage = function (type_mes, subtype_mes, target_mes, data_mes) {
+const SendMessage = function(type_mes, subtype_mes, target_mes, data_mes) {
   postMessage({
     id: ID,
     type: type_mes,
     subtype: subtype_mes,
     target: target_mes,
-    data: data_mes,
+    data: data_mes
   });
 };
 
 // initialized the model from the model_definition file
-const initModel = function (model_definition) {
+const initModel = function(model_definition) {
   if (model_definition) {
     current_model["weight"] = model_definition["weight"];
     current_model["name"] = model_definition["name"];
@@ -126,75 +137,75 @@ const initModel = function (model_definition) {
     current_model["oxygenation"] = calcOxygenationFromTO2;
 
     // initialize all the components
-    model_definition.blood_compartment_definitions.forEach((element) => {
+    model_definition.blood_compartment_definitions.forEach(element => {
       let newComp = new BloodCompartment(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.blood_connector_definitions.forEach((element) => {
+    model_definition.blood_connector_definitions.forEach(element => {
       let newComp = new BloodConnector(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.valve_definitions.forEach((element) => {
+    model_definition.valve_definitions.forEach(element => {
       let newComp = new Valve(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.shunt_definitions.forEach((element) => {
+    model_definition.shunt_definitions.forEach(element => {
       let newComp = new Shunt(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.gas_compartment_definitions.forEach((element) => {
+    model_definition.gas_compartment_definitions.forEach(element => {
       let newComp = new GasCompartment(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.gas_connector_definitions.forEach((element) => {
+    model_definition.gas_connector_definitions.forEach(element => {
       let newComp = new GasConnector(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.container_definitions.forEach((element) => {
+    model_definition.container_definitions.forEach(element => {
       let newComp = new Container(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
         newComp["found_compartments"] = false;
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.diffusor_definitions.forEach((element) => {
+    model_definition.diffusor_definitions.forEach(element => {
       let newComp = new Diffusor(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
         newComp["found_compartments"] = false;
       });
       current_model.components[newComp.name] = newComp;
     });
 
-    model_definition.exchanger_definitions.forEach((element) => {
+    model_definition.exchanger_definitions.forEach(element => {
       let newComp = new Exchanger(current_model);
-      Object.keys(element).forEach(function (key) {
+      Object.keys(element).forEach(function(key) {
         newComp[key] = element[key];
         newComp["found_compartments"] = false;
       });
@@ -203,73 +214,73 @@ const initModel = function (model_definition) {
 
     // initialize all the models with the parameters from the JSON file
     current_model.models["metabolism"] = new Metabolism(current_model);
-    Object.keys(model_definition.metabolism).forEach(function (key) {
+    Object.keys(model_definition.metabolism).forEach(function(key) {
       current_model.models.metabolism[key] = model_definition.metabolism[key];
     });
 
     current_model.models["ecg"] = new ECG(current_model);
-    Object.keys(model_definition.ecg).forEach(function (key) {
+    Object.keys(model_definition.ecg).forEach(function(key) {
       current_model.models.ecg[key] = model_definition.ecg[key];
     });
 
     current_model.models["heart"] = new Heart(current_model);
-    Object.keys(model_definition.heart).forEach(function (key) {
+    Object.keys(model_definition.heart).forEach(function(key) {
       current_model.models.heart[key] = model_definition.heart[key];
     });
 
     current_model.models["breathing"] = new Breathing(current_model);
-    Object.keys(model_definition.breathing).forEach(function (key) {
+    Object.keys(model_definition.breathing).forEach(function(key) {
       current_model.models.breathing[key] = model_definition.breathing[key];
     });
 
     current_model.models["ventilator"] = new Ventilator(current_model);
-    Object.keys(model_definition.ventilator).forEach(function (key) {
+    Object.keys(model_definition.ventilator).forEach(function(key) {
       current_model.models.ventilator[key] = model_definition.ventilator[key];
     });
 
     current_model.models["ans"] = new ANS(current_model);
-    Object.keys(model_definition.ans).forEach(function (key) {
+    Object.keys(model_definition.ans).forEach(function(key) {
       current_model.models.ans[key] = model_definition.ans[key];
     });
 
     current_model.models["avinteraction"] = new AvInteraction(current_model);
-    Object.keys(model_definition.avinteraction).forEach(function (key) {
+    Object.keys(model_definition.avinteraction).forEach(function(key) {
       current_model.models.avinteraction[key] =
         model_definition.avinteraction[key];
     });
 
     current_model.models["brain"] = new Brain(current_model);
-    Object.keys(model_definition.brain).forEach(function (key) {
+    Object.keys(model_definition.brain).forEach(function(key) {
       current_model.models.brain[key] = model_definition.brain[key];
     });
 
     current_model.models["drugs"] = new Drugs(current_model);
-    Object.keys(model_definition.drugs).forEach(function (key) {
+    Object.keys(model_definition.drugs).forEach(function(key) {
       current_model.models.drugs[key] = model_definition.drugs[key];
     });
 
     current_model.models["kidneys"] = new Kidneys(current_model);
-    Object.keys(model_definition.kidneys).forEach(function (key) {
+    Object.keys(model_definition.kidneys).forEach(function(key) {
       current_model.models.kidneys[key] = model_definition.kidneys[key];
     });
 
     current_model.models["liver"] = new Liver(current_model);
-    Object.keys(model_definition.liver).forEach(function (key) {
+    Object.keys(model_definition.liver).forEach(function(key) {
       current_model.models.liver[key] = model_definition.liver[key];
     });
 
     current_model.models["placenta"] = new Placenta(current_model);
-    Object.keys(model_definition.placenta).forEach(function (key) {
+    Object.keys(model_definition.placenta).forEach(function(key) {
       current_model.models.placenta[key] = model_definition.placenta[key];
     });
 
     current_model.models["birth"] = new Birth(current_model);
-    Object.keys(model_definition.birth).forEach(function (key) {
+    Object.keys(model_definition.birth).forEach(function(key) {
       current_model.models.birth[key] = model_definition.birth[key];
     });
 
     current_model.models["ecmo"] = new ECMO(current_model);
-    Object.keys(model_definition.ecmo).forEach(function (key) {
+    Object.keys(model_definition.ecmo).forEach(function(key) {
       current_model.models.ecmo[key] = model_definition.ecmo[key];
     });
 
@@ -285,7 +296,7 @@ const initModel = function (model_definition) {
 };
 
 // calculate a number of seconds of the model
-const calculateModel = function (time_to_calculate) {
+const calculateModel = function(time_to_calculate) {
   // calculate the number of steps needed for this
   let no_needed_steps = parseInt(
     time_to_calculate / current_model.modeling_interval
@@ -295,10 +306,10 @@ const calculateModel = function (time_to_calculate) {
   SendMessage("mes", null, null, [
     `current model clock at ${Math.round(
       current_model.model_time_total
-    )} seconds.`,
+    )} seconds.`
   ]);
   SendMessage("mes", null, null, [
-    `calculating for ${time_to_calculate} seconds in ${no_needed_steps} steps.`,
+    `calculating for ${time_to_calculate} seconds in ${no_needed_steps} steps.`
   ]);
 
   // reset the model_time_run
@@ -320,18 +331,18 @@ const calculateModel = function (time_to_calculate) {
       (total_step_execution_time / no_needed_steps) * 1000;
 
     SendMessage("mes", null, null, [
-      `calculations ready in ${total_step_execution_time.toFixed(3)} seconds.`,
+      `calculations ready in ${total_step_execution_time.toFixed(3)} seconds.`
     ]);
     SendMessage("mes", null, null, [
       `average model step in ${average_model_step_time.toFixed(
         6
-      )} milliseconds.`,
+      )} milliseconds.`
     ]);
   }
 };
 
 // start the realtime mode
-const startModel = function (params) {
+const startModel = function(params) {
   if (model_definition) {
     // reset the main timer if it's already running
     if (main_timer) {
@@ -350,13 +361,13 @@ const startModel = function (params) {
     SendMessage("mes", null, null, ["model started"]);
   } else {
     SendMessage("mes", null, null, [
-      "failed to start model. model not initialized!",
+      "failed to start model. model not initialized!"
     ]);
   }
 };
 
 // stop the realtime window
-const stopModel = function () {
+const stopModel = function() {
   if (model_definition) {
     // stop the main timer
     if (main_timer) {
@@ -366,12 +377,12 @@ const stopModel = function () {
     SendMessage("mes", null, null, ["model stopped"]);
   } else {
     SendMessage("mes", null, null, [
-      "failed to start model. model not initialized!",
+      "failed to start model. model not initialized!"
     ]);
   }
 };
 
-const disposeModel = function () {
+const disposeModel = function() {
   // stop the main timer
   if (main_timer) {
     clearInterval(main_timer);
@@ -383,7 +394,7 @@ const disposeModel = function () {
   SendMessage("mes", null, null, ["model disposed"]);
 };
 
-const loadModel = function (json_model_definition) {
+const loadModel = function(json_model_definition) {
   // parse the JSON file into the model_definition object
   model_definition = JSON.parse(json_model_definition);
 
@@ -395,7 +406,7 @@ const loadModel = function (json_model_definition) {
 };
 
 // model cycle loop which is called every x ms defined by the modeling stepsize in the model definition
-const modelStep = function () {
+const modelStep = function() {
   // get the current accurate time in ms
   let w = performance.now();
 

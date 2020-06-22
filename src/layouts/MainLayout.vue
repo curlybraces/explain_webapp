@@ -59,7 +59,7 @@ export default {
           label: "ventilation",
           caption: "",
           icon: "fas fa-lungs",
-          to: "/"
+          to: "/ventilator"
         },
         {
           label: "charts",
