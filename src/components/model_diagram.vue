@@ -4,9 +4,44 @@
     <div class="col text-center">
       <div class="col text-center">
         <div id="stage" />
+        <div class="row q-gutter-xs justify-center">
+          <q-btn color="negative" icon="add" label="ADD">
+            <q-menu>
+              <q-item @click="addComponent(0)" clickable v-close-popup>
+                <q-item-section>blood compartment</q-item-section>
+              </q-item>
+              <q-item @click="addComponent(1)" clickable v-close-popup>
+                <q-item-section>blood connector</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>valve</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>shunt</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>gas connector</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>gas compartment</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>container</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>exchanger</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>diffusor</q-item-section>
+              </q-item>
+            </q-menu>
+          </q-btn>
+          <q-btn color="negative" icon="link" label="CONNECT" />
+          <q-btn color="negative" icon="remove" label="REMOVE" />
+        </div>
       </div>
     </div>
-    <div class="col-2 text-center">third column</div>
+    <div class="col-2 text-center">{{ adding_type }}</div>
   </div>
 </template>
 
@@ -16,58 +51,31 @@ import * as PIXI from "pixi.js";
 export default {
   data() {
     return {
+      adding_type: 0,
       drawing_mode: 0,
-      aspect_ratio: 0.7,
+      canvas: {
+        width: 0,
+        height: 0,
+        aspect_ratio: 0.7
+      },
+
       pixi_app: null,
       components: [],
+      models: [],
       selectedComponent: null,
-      compartmentFrom: null,
-      compartmentTo: null,
+      selectedModel: null,
+      selectedComponentFrom: null,
+      selectedComponentTo: null,
       status: "none"
     };
   },
+
   mounted() {
     this.initializeComponent();
   },
   methods: {
-    dragMode() {
-      this.drawing_mode = 0;
-      this.selectedComponent = null;
-      this.compartmentFrom = null;
-      this.compartmentTo = null;
-    },
-    connectMode() {
-      this.drawing_mode = 1;
-      this.selectedComponent = null;
-      this.compartmentFrom = null;
-      this.compartmentTo = null;
-    },
-    addCompartment() {
-      this.drawing_mode = 0;
-      let new_component = {
-        sprite_file_name: "statics/Sprites/compartment.svg",
-        sprite: null
-      };
-      new_component.sprite = new PIXI.Sprite.from(
-        new_component.sprite_file_name
-      );
-      new_component.sprite.id = "test";
-      new_component.sprite.anchor.set(0.5);
-      new_component.sprite.x = this.pixi_app.screen.width / 2;
-      new_component.sprite.y = this.pixi_app.screen.height / 2;
-      new_component.sprite.width = 40;
-      new_component.sprite.height = 40;
-      new_component.sprite.interactive = true;
-      new_component.sprite.on("click", () => {
-        this.componentClicked(new_component);
-      });
-
-      this.components.push(new_component);
-
-      this.pixi_app.stage.addChild(new_component.sprite);
-    },
-    removeCompartment() {
-      this.drawing_mode = 2;
+    addComponent(type) {
+      console.log(type);
     },
     initializeComponent() {
       // define a pixi app with the canvas as view
@@ -85,20 +93,17 @@ export default {
 
       // add interactivity
       this.pixi_app.stage.interactive = true;
-      this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
+      //this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
 
       this.resize();
       this.buildDiagram();
     },
     resize() {
       const parent = this.pixi_app.view.parentNode;
-      this.width = parent.clientWidth;
-      this.height = parent.clientWidth * this.aspect_ratio;
+      this.canvas.width = parent.clientWidth * 0.9;
+      this.canvas.height = parent.clientWidth * 0.9 * this.canvas.aspect_ratio;
 
-      this.pixi_app.renderer.resize(
-        parent.clientWidth,
-        parent.clientWidth * this.aspect_ratio
-      );
+      this.pixi_app.renderer.resize(this.canvas.width, this.canvas.height);
 
       // You can use the 'screen' property as the renderer visible
       // area, this is more useful than view.width/height because
@@ -111,41 +116,6 @@ export default {
     buildDiagram() {
       // first map all model components and then generate a map
       // mouse interacti
-    },
-
-    componentClicked(clickedComponent) {
-      switch (this.drawing_mode) {
-        case 0:
-          if (this.selectedComponent === clickedComponent) {
-            this.selectedComponent = null;
-          } else {
-            this.selectedComponent = clickedComponent;
-          }
-          break;
-        case 1:
-          if (this.compartmentFrom === null) {
-            clickedComponent.sprite.tint = "#ff0000";
-            this.compartmentFrom = clickedComponent;
-            this.status = "select comprtment to";
-            break;
-          }
-          if (this.compartmentTo === null) {
-            this.compartmentTo = clickedComponent;
-            this.status = "selected comprtment to and start drawing";
-          }
-
-          break;
-        case 2:
-          this.pixi_app.stage.removeChild(clickedComponent.sprite);
-          break;
-      }
-    },
-    moveSelectedSprite(e) {
-      if (this.selectedComponent != null) {
-        let pos = e.data.global;
-        this.selectedComponent.sprite.x = pos.x;
-        this.selectedComponent.sprite.y = pos.y;
-      }
     }
   }
 };
