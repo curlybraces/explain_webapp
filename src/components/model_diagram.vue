@@ -5,11 +5,23 @@
       <div class="col text-center">
         <div id="stage" />
         <div class="row q-gutter-xs justify-center">
-          <q-btn color="negative" icon="add" label="ADD">
+          <q-btn color="primary" size="sm" icon="add" label="COMPARTMENT">
             <q-menu>
-              <q-item @click="addComponent(0)" clickable v-close-popup>
+              <q-item
+                @click="addComponent(0)"
+                size="sm"
+                clickable
+                v-close-popup
+              >
                 <q-item-section>blood compartment</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>gas compartment</q-item-section>
+              </q-item>
+            </q-menu>
+          </q-btn>
+          <q-btn color="primary" size="sm" icon="add" label="connector">
+            <q-menu>
               <q-item @click="addComponent(1)" clickable v-close-popup>
                 <q-item-section>blood connector</q-item-section>
               </q-item>
@@ -22,22 +34,12 @@
               <q-item clickable v-close-popup>
                 <q-item-section>gas connector</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>gas compartment</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>container</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>exchanger</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>diffusor</q-item-section>
-              </q-item>
             </q-menu>
           </q-btn>
-          <q-btn color="negative" icon="link" label="CONNECT" />
-          <q-btn color="negative" icon="remove" label="REMOVE" />
+          <q-btn color="primary" size="sm" icon="add" label="CONTAINER" />
+          <q-btn color="primary" size="sm" icon="add" label="EXCHANGER" />
+          <q-btn color="primary" size="sm" icon="add" label="DIFFUSOR" />
+          <q-btn color="negative" size="sm" icon="remove" label="REMOVE" />
         </div>
       </div>
     </div>
@@ -75,7 +77,47 @@ export default {
   },
   methods: {
     addComponent(type) {
-      console.log(type);
+      let new_comp = {
+        sprite: null
+      };
+
+      switch (type) {
+        case 0: // bloodcompartment
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          break;
+        case 1: // bloodconnector
+          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/vessel.svg");
+          break;
+      }
+
+      new_comp.sprite.anchor.set(0.5);
+      new_comp.sprite.width = 60;
+      new_comp.sprite.height = 60;
+      new_comp.sprite.x = this.canvas.width / 2;
+      new_comp.sprite.y = this.canvas.height / 2;
+      new_comp.sprite.interactive = true;
+      new_comp.sprite.on("click", () => {
+        this.selectComponent(new_comp);
+      });
+
+      this.pixi_app.stage.addChild(new_comp.sprite);
+    },
+    selectComponent(clickedComponent) {
+      if (this.selectedComponent === clickedComponent) {
+        this.selectedComponent = null;
+      } else {
+        this.selectedComponent = clickedComponent;
+      }
+    },
+    moveSelectedSprite(e) {
+      if (this.selectedComponent != null) {
+        let pos = e.data.global;
+
+        this.selectedComponent.sprite.x = pos.x;
+        this.selectedComponent.sprite.y = pos.y;
+      }
     },
     initializeComponent() {
       // define a pixi app with the canvas as view
@@ -93,7 +135,7 @@ export default {
 
       // add interactivity
       this.pixi_app.stage.interactive = true;
-      //this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
+      this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
 
       this.resize();
       this.buildDiagram();
