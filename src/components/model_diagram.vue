@@ -36,8 +36,9 @@
               </q-item>
             </q-menu>
           </q-btn>
+          <q-btn color="primary" size="sm" icon="add" label="PUMP" />
           <q-btn color="primary" size="sm" icon="add" label="CONTAINER" />
-          <q-btn color="primary" size="sm" icon="add" label="EXCHANGER" />
+          <q-btn color="primary" size="sm" icon="add" label="GASEXCHANGER" />
           <q-btn color="primary" size="sm" icon="add" label="DIFFUSOR" />
           <q-btn color="negative" size="sm" icon="remove" label="REMOVE" />
         </div>
