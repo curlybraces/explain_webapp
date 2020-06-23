@@ -16,7 +16,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ tidal_volume }}
               </div>
             </q-card-section>
           </q-card>
@@ -30,7 +30,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ minute_volume }}
               </div>
             </q-card-section>
           </q-card>
@@ -44,7 +44,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ peak_pressure }}
               </div>
             </q-card-section>
           </q-card>
@@ -58,7 +58,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ plateau_pressure }}
               </div>
             </q-card-section>
           </q-card>
@@ -72,7 +72,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ peep }}
               </div>
             </q-card-section>
           </q-card>
@@ -85,7 +85,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ mean_pressure }}
               </div>
             </q-card-section>
           </q-card>
@@ -99,7 +99,7 @@
             <q-separator />
             <q-card-section class="q-pa-sm">
               <div class="parameter-value text-center">
-                10
+                {{ tube_leak }}
               </div>
             </q-card-section>
           </q-card>
@@ -184,10 +184,23 @@ export default {
             _data.ventilator.plateau_pressure * 1.35951
           );
           this.peep = Math.round(_data.ventilator.peep * 1.35951);
-          this.tube_leak = 0;
+          this.tube_leak = Math.round(
+            (1 -
+              _data.ventilator.exhaled_tidal_volume /
+                _data.ventilator.inspiratory_tidal_volume) *
+              100
+          );
+
+          let t_tot = 60 / _data.ventilator["measured_freq"];
+
+          this.mean_pressure = Math.round(
+            (this.peak_pressure - this.peep) *
+              (_data.ventilator["t_in"] / t_tot) +
+              this.peep
+          );
         }
         // increase the counters
-        this.table_update_counter += _data.interval;
+        this.update_counter += _data.interval;
       }
     }
   }

@@ -1,25 +1,23 @@
 <template>
-  <q-page>
-    <div class="row justify-center">
-      <controller></controller>
-    </div>
-    <div class="row justify-center">
-      <vitals_graph></vitals_graph>
+  <q-page padding>
+    <div class="row justify-center items-start">
+      <div class="col-2 text-center"></div>
+      <div class="col text-center">
+        <model_diagram></model_diagram>
+      </div>
+      <div class="col-2 text-center"></div>
     </div>
   </q-page>
 </template>
 
 <script>
-import vitals_graph from "components/vitals_graph";
-import custom_graph from "components/custom_graph";
-import ventilator_graph from "components/ventilator_graphs";
+import model_diagram from "components/model_diagram";
 import controller from "components/controller";
 
 export default {
   name: "PageIndex",
   components: {
-    vitals_graph,
-    controller
+    model_diagram
   }
 };
 </script>
