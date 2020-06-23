@@ -1,6 +1,12 @@
 <template>
-  <div class="col text-center">
-    <div id="stage" />
+  <div class="row justify-center items-start">
+    <div class="col-2 text-center">controls</div>
+    <div class="col text-center">
+      <div class="col text-center">
+        <div id="stage" />
+      </div>
+    </div>
+    <div class="col-2 text-center">third column</div>
   </div>
 </template>
 
@@ -11,7 +17,7 @@ export default {
   data() {
     return {
       drawing_mode: 0,
-      aspect_ratio: 0.75,
+      aspect_ratio: 0.7,
       pixi_app: null,
       components: [],
       selectedComponent: null,

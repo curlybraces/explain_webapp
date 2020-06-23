@@ -1,12 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row justify-center items-start">
-      <div class="col-2 text-center"></div>
-      <div class="col text-center">
-        <model_diagram></model_diagram>
-      </div>
-      <div class="col-2 text-center"></div>
-    </div>
+    <model_diagram></model_diagram>
   </q-page>
 </template>
 
