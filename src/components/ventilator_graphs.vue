@@ -72,7 +72,7 @@ export default {
           }
         },
         width: 800,
-        height: 400,
+        height: 300,
         title: "ventilator graphs in time (sec)",
         curveType: "none"
       },
@@ -90,8 +90,8 @@ export default {
             min: 0
           }
         },
-        width: 500,
-        height: 400,
+        width: 400,
+        height: 300,
         title: "pressure - volume loop",
         curveType: "function"
       },
