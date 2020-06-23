@@ -1,18 +1,33 @@
 <template>
-<div class="q-ma-sm">
-  <div class="row justify-center">
-    <label>MODEL CONTROLS</label>
-  </div>
-  <div class="q-gutter-xs q-mb-md">
-    <q-btn color="negative" icon="play_arrow" @click="startModel" label="" />
-    <q-btn color="negative" icon-right="pause" @click="stopModel" label="" />
-    <q-btn
-      color="negative"
-      icon-right="autorenew"
-      @click="stopModel"
-      label=""
-    />
-  </div>
+  <div class="q-ma-sm">
+    <q-card>
+      <q-card-section class="q-pa-sm">
+        <div class="text-overline text-center">model controls</div>
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <div class="row q-gutter-xs justify-center">
+          <q-btn
+            color="negative"
+            icon="play_arrow"
+            @click="startModel"
+            label=""
+          />
+          <q-btn
+            color="negative"
+            icon-right="pause"
+            @click="stopModel"
+            label=""
+          />
+          <q-btn
+            color="negative"
+            icon-right="autorenew"
+            @click="stopModel"
+            label=""
+          />
+        </div>
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 

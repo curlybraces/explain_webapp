@@ -1,141 +1,143 @@
 <template>
   <div class="q-ma-sm">
-    <div class="row justify-center">
-      <label>VENTILATOR CONTROLS</label>
-    </div>
-    <div class="q-gutter-sm q-mb-md">
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="tv"
-        :min="min_tv"
-        :max="max_tv"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">tidal volume</small>
-          </div>
-          <div>{{ tv }}</div>
-        </div>
-      </q-knob>
+    <q-card>
+      <q-card-section class="q-pa-sm">
+        <div class="text-overline text-center">ventilator controls</div>
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <div class="row q-gutter-sm justify-center">
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="tv"
+            :min="min_tv"
+            :max="max_tv"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">tidal volume</small>
+              </div>
+              <div>{{ tv }}</div>
+            </div>
+          </q-knob>
 
-
-
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="flow"
-        :min="min_flow"
-        :max="max_flow"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">inspiratory flow</small>
-          </div>
-          <div>{{ flow }}</div>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="flow"
+            :min="min_flow"
+            :max="max_flow"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">inspiratory flow</small>
+              </div>
+              <div>{{ flow }}</div>
+            </div>
+          </q-knob>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="pip"
+            :min="min_pip"
+            :max="max_pip"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">peak pressure</small>
+              </div>
+              <div>{{ pip }}</div>
+            </div>
+          </q-knob>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="peep"
+            :min="min_peep"
+            :max="max_peep"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">peep</small>
+              </div>
+              <div>{{ peep }}</div>
+            </div>
+          </q-knob>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="freq"
+            :min="min_freq"
+            :max="max_freq"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">frequency</small>
+              </div>
+              <div>{{ freq }}</div>
+            </div>
+          </q-knob>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="t_in"
+            :min="min_tin"
+            :max="max_tin"
+            :step="step_t_in"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">inspiration time</small>
+              </div>
+              <div>{{ t_in }}</div>
+            </div>
+          </q-knob>
+          <q-knob
+            show-value
+            class="text-primary q-ma-md"
+            v-model="fio2"
+            :min="min_fio2"
+            :max="max_fio2"
+            size="100px"
+            color="primary"
+            track-color="grey-3"
+            @change="updateVentilatorSettings"
+          >
+            <div class="text-center">
+              <div>
+                <small class="text-negative text-knob">fio2</small>
+              </div>
+              <div>{{ fio2 }}</div>
+            </div>
+          </q-knob>
         </div>
-      </q-knob>
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="pip"
-        :min="min_pip"
-        :max="max_pip"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">peak pressure</small>
-          </div>
-          <div>{{ pip }}</div>
-        </div>
-      </q-knob>
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="peep"
-        :min="min_peep"
-        :max="max_peep"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">peep</small>
-          </div>
-          <div>{{ peep }}</div>
-        </div>
-      </q-knob>
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="freq"
-        :min="min_freq"
-        :max="max_freq"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">frequency</small>
-          </div>
-          <div>{{ freq }}</div>
-        </div>
-      </q-knob>
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="t_in"
-        :min="min_tin"
-        :max="max_tin"
-        :step="step_t_in"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">inspiration time</small>
-          </div>
-          <div>{{ t_in }}</div>
-        </div>
-      </q-knob>
-      <q-knob
-        show-value
-        class="text-primary q-ma-md"
-        v-model="fio2"
-        :min="min_fio2"
-        :max="max_fio2"
-        size="100px"
-        color="primary"
-        track-color="grey-3"
-        @change="updateVentilatorSettings"
-      >
-        <div class="text-center">
-          <div>
-            <small class="text-negative text-knob">fio2</small>
-          </div>
-          <div>{{ fio2 }}</div>
-        </div>
-      </q-knob>
-    </div>
-
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 

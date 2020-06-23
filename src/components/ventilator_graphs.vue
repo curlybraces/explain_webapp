@@ -1,25 +1,32 @@
 <template>
-
-  <div class="q-ma-sm chart">
-  <div class="float-left">
-      <GChart
-        v-show="chart_visible"
-        type="LineChart"
-        :data="chart_data"
-        :options="chart_options"
-      ></GChart>
-</div>
-<div class="float-right">
-      <GChart
-        v-show="chart_visible"
-        type="LineChart"
-        :data="chart_data_pv"
-        :options="chart_options_pv"
-      ></GChart>
-</div>
-
+  <div class="q-ma-sm">
+    <q-card>
+      <q-card-section class="q-pa-sm">
+        <div class="text-overline text-center">ventilator graphs</div>
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <div class="row justify-center">
+          <div class="float-left">
+            <GChart
+              v-show="chart_visible"
+              type="LineChart"
+              :data="chart_data"
+              :options="chart_options"
+            ></GChart>
+          </div>
+          <div>
+            <GChart
+              v-show="chart_visible"
+              type="LineChart"
+              :data="chart_data_pv"
+              :options="chart_options_pv"
+            ></GChart>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
   </div>
-
 </template>
 
 <script>
@@ -129,8 +136,7 @@ export default {
           this.data_update_counter = 0;
           this.data.push([
             _data.time,
-            _data.YPIECE_NCA.real_flow *
-              60,
+            _data.YPIECE_NCA.real_flow * 60,
             (_data.YPIECE.pres_current - _data.metabolism.p_atm) * 1.35951,
             _data.ventilator.volume * 1000
           ]);
@@ -141,7 +147,7 @@ export default {
           ]);
 
           // this.data_pv.push([
-            
+
           //   _data.ventilator.volume * 1000,
           //   _data.YPIECE_NCA.real_flow * 60,
           // ]);
@@ -181,12 +187,3 @@ export default {
   }
 };
 </script>
-
-<style>
-#chart {
-  width: 100%;
-}
-.testClass {
-  font-size: 18px;
-}
-</style>
