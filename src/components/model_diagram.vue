@@ -95,7 +95,10 @@ export default {
       selectedComponentFrom: null,
       selectedComponentTo: null,
       status: "none",
-      selectedComponentSprite: null
+      selectedComponentSprite: null,
+      moveSprite: null,
+      turnSprite: null,
+      removeSrpite: null
     };
   },
 
@@ -213,8 +216,69 @@ export default {
       this.selectedComponentSprite.tint = "0xff0000";
       this.selectedComponentSprite.visible = false;
 
+      this.moveSprite = new PIXI.Sprite.from("statics/Sprites/move.svg");
+      this.moveSprite.anchor.set(0.5);
+      this.moveSprite.width = 20;
+      this.moveSprite.height = 20;
+      this.moveSprite.x = 30;
+      this.moveSprite.y = 30;
+      this.moveSprite.alpha = 0.1;
+      this.pixi_app.stage.addChild(this.moveSprite);
+      this.moveSprite.interactive = true;
+      this.moveSprite.on("click", () => {
+        this.changeDrawingMode("move");
+      });
+
+      this.turnSprite = new PIXI.Sprite.from("statics/Sprites/turn.svg");
+      this.turnSprite.anchor.set(0.5);
+      this.turnSprite.width = 20;
+      this.turnSprite.height = 20;
+      this.turnSprite.x = 30;
+      this.turnSprite.y = 70;
+      this.turnSprite.alpha = 0.1;
+      this.pixi_app.stage.addChild(this.turnSprite);
+      this.turnSprite.interactive = true;
+      this.turnSprite.on("click", () => {
+        this.changeDrawingMode("turn");
+      });
+
+      this.removeSprite = new PIXI.Sprite.from("statics/Sprites/remove.svg");
+      this.removeSprite.anchor.set(0.5);
+      this.removeSprite.width = 20;
+      this.removeSprite.height = 20;
+      this.removeSprite.x = 30;
+      this.removeSprite.y = 110;
+      this.removeSprite.alpha = 0.1;
+      this.pixi_app.stage.addChild(this.removeSprite);
+      this.removeSprite.interactive = true;
+      this.removeSprite.on("click", () => {
+        this.changeDrawingMode("remove");
+      });
+
       this.resize();
       this.buildDiagram();
+    },
+    changeDrawingMode(_mode) {
+      switch (_mode) {
+        case "move":
+          this.moveSprite.alpha = 1;
+          this.turnSprite.alpha = 0.1;
+          this.removeSprite.alpha = 0.1;
+          this.drawing_mode = 0;
+          break;
+        case "turn":
+          this.moveSprite.alpha = 0.1;
+          this.turnSprite.alpha = 1;
+          this.removeSprite.alpha = 0.1;
+          this.drawing_mode = 1;
+          break;
+        case "remove":
+          this.moveSprite.alpha = 0.1;
+          this.turnSprite.alpha = 0.1;
+          this.removeSprite.alpha = 1;
+          this.drawing_mode = 2;
+          break;
+      }
     },
     keypress(e) {
       if ((e.key === "ArrowLeft") & (this.drawing_mode === 1)) {
