@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       adding_type: 0,
-      drawing_mode: 0,
+      drawing_mode: -1,
       canvas: {
         width: 0,
         height: 0,
@@ -94,7 +94,8 @@ export default {
       selectedModel: null,
       selectedComponentFrom: null,
       selectedComponentTo: null,
-      status: "none"
+      status: "none",
+      selectedComponentSprite: null
     };
   },
 
@@ -155,8 +156,12 @@ export default {
     selectComponent(clickedComponent) {
       if (this.selectedComponent === clickedComponent) {
         this.selectedComponent = null;
+        this.selectedComponentSprite.visible = false;
       } else {
         this.selectedComponent = clickedComponent;
+        this.selectedComponentSprite.x = clickedComponent.sprite.x;
+        this.selectedComponentSprite.y = clickedComponent.sprite.y;
+        this.selectedComponentSprite.visible = true;
       }
     },
     moveSelectedSprite(e) {
@@ -165,10 +170,16 @@ export default {
 
         this.selectedComponent.sprite.x = pos.x;
         this.selectedComponent.sprite.y = pos.y;
+        this.selectedComponentSprite.x = pos.x;
+        this.selectedComponentSprite.y = pos.y;
       }
     },
     initializeComponent() {
       // define a pixi app with the canvas as view
+
+      PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+      PIXI.settings.ROUND_PIXELS = true;
+
       this.pixi_app = new PIXI.Application({
         transparent: false,
         autoResize: true,
@@ -187,6 +198,20 @@ export default {
       // add interactivity
       this.pixi_app.stage.interactive = true;
       this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
+
+      // define the selected component sprite
+      this.selectedComponentSprite = new PIXI.Sprite.from(
+        "statics/Sprites/compartment.svg"
+      );
+      this.selectedComponentSprite.anchor.set(0.5);
+      this.selectedComponentSprite.width = 100;
+      this.selectedComponentSprite.height = 100;
+      this.selectedComponentSprite.x = 10;
+      this.selectedComponentSprite.y = 10;
+      this.selectedComponentSprite.alpha = 0.1;
+      this.pixi_app.stage.addChild(this.selectedComponentSprite);
+      this.selectedComponentSprite.tint = "0xff0000";
+      this.selectedComponentSprite.visible = false;
 
       this.resize();
       this.buildDiagram();
