@@ -15,7 +15,7 @@
               >
                 <q-item-section>blood compartment</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item @click="addComponent(2)" clickable v-close-popup>
                 <q-item-section>gas compartment</q-item-section>
               </q-item>
             </q-menu>
@@ -38,9 +38,34 @@
           </q-btn>
           <q-btn color="primary" size="sm" icon="add" label="PUMP" />
           <q-btn color="primary" size="sm" icon="add" label="CONTAINER" />
-          <q-btn color="primary" size="sm" icon="add" label="GASEXCHANGER" />
-          <q-btn color="primary" size="sm" icon="add" label="DIFFUSOR" />
-          <q-btn color="negative" size="sm" icon="remove" label="REMOVE" />
+          <q-btn
+            color="primary"
+            @click="addComponent(9)"
+            size="sm"
+            icon="add"
+            label="GASEXCHANGER"
+          />
+          <q-btn
+            color="primary"
+            @click="addComponent(10)"
+            size="sm"
+            icon="add"
+            label="DIFFUSOR"
+          />
+          <q-btn
+            @click="setDrawingMode(2)"
+            color="negative"
+            size="sm"
+            icon="remove"
+            label="REMOVE"
+          />
+          <q-btn
+            @click="setDrawingMode(1)"
+            color="negative"
+            size="sm"
+            icon="remove"
+            label="TURN"
+          />
         </div>
       </div>
     </div>
@@ -77,6 +102,13 @@ export default {
     this.initializeComponent();
   },
   methods: {
+    setDrawingMode(_mode) {
+      if (this.drawing_mode === _mode) {
+        this.drawing_mode = 0;
+      } else {
+        this.drawing_mode = _mode;
+      }
+    },
     addComponent(type) {
       let new_comp = {
         sprite: null
@@ -89,7 +121,22 @@ export default {
           );
           break;
         case 1: // bloodconnector
-          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/vessel.svg");
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/connector2.svg"
+          );
+          break;
+        case 2: // gascompartment
+          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/air.svg");
+          break;
+        case 9: // exchanger
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/exchanger.svg"
+          );
+          break;
+        case 10: // diffusor
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/diffusor.svg"
+          );
           break;
       }
 
@@ -113,7 +160,7 @@ export default {
       }
     },
     moveSelectedSprite(e) {
-      if (this.selectedComponent != null) {
+      if ((this.selectedComponent != null) & (this.drawing_mode === 0)) {
         let pos = e.data.global;
 
         this.selectedComponent.sprite.x = pos.x;
@@ -134,12 +181,23 @@ export default {
       // listen for the window resize events
       window.addEventListener("resize", this.resize);
 
+      // listen for keypresses
+      window.addEventListener("keydown", this.keypress);
+
       // add interactivity
       this.pixi_app.stage.interactive = true;
       this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
 
       this.resize();
       this.buildDiagram();
+    },
+    keypress(e) {
+      if ((e.key === "ArrowLeft") & (this.drawing_mode === 1)) {
+        this.selectedComponent.sprite.rotation -= 0.1;
+      }
+      if ((e.key === "ArrowRight") & (this.drawing_mode === 1)) {
+        this.selectedComponent.sprite.rotation += 0.1;
+      }
     },
     resize() {
       const parent = this.pixi_app.view.parentNode;
