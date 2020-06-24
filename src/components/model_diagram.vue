@@ -25,7 +25,7 @@
               <q-item @click="addComponent(1)" clickable v-close-popup>
                 <q-item-section>blood connector</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item @click="addComponent(4)" clickable v-close-popup>
                 <q-item-section>valve</q-item-section>
               </q-item>
               <q-item clickable v-close-popup>
@@ -36,7 +36,13 @@
               </q-item>
             </q-menu>
           </q-btn>
-          <q-btn color="primary" size="sm" icon="add" label="PUMP" />
+          <q-btn
+            color="primary"
+            size="sm"
+            icon="add"
+            @click="addComponent(3)"
+            label="PUMP"
+          />
           <q-btn color="primary" size="sm" icon="add" label="CONTAINER" />
           <q-btn
             color="primary"
@@ -126,11 +132,17 @@ export default {
           break;
         case 1: // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
-            "statics/Sprites/connector2.svg"
+            "statics/Sprites/connector.svg"
           );
           break;
         case 2: // gascompartment
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/air.svg");
+          break;
+        case 3: // pump
+          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/pump2.svg");
+          break;
+        case 4: // valve
+          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
           break;
         case 9: // exchanger
           new_comp.sprite = new PIXI.Sprite.from(
@@ -145,8 +157,8 @@ export default {
       }
 
       new_comp.sprite.anchor.set(0.5);
-      new_comp.sprite.width = 40;
-      new_comp.sprite.height = 40;
+      new_comp.sprite.width = 25;
+      new_comp.sprite.height = 25;
       new_comp.sprite.x = this.canvas.width / 2;
       new_comp.sprite.y = this.canvas.height / 2;
       new_comp.sprite.interactive = true;
@@ -204,7 +216,7 @@ export default {
 
       // define the selected component sprite
       this.selectedComponentSprite = new PIXI.Sprite.from(
-        "statics/Sprites/compartment.svg"
+        "statics/Sprites/compartment-old.svg"
       );
       this.selectedComponentSprite.anchor.set(0.5);
       this.selectedComponentSprite.width = 100;
