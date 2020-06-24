@@ -142,8 +142,8 @@ export default {
       }
 
       new_comp.sprite.anchor.set(0.5);
-      new_comp.sprite.width = 60;
-      new_comp.sprite.height = 60;
+      new_comp.sprite.width = 40;
+      new_comp.sprite.height = 40;
       new_comp.sprite.x = this.canvas.width / 2;
       new_comp.sprite.y = this.canvas.height / 2;
       new_comp.sprite.interactive = true;
