@@ -58,31 +58,21 @@
             icon="add"
             label="DIFFUSOR"
           />
-          <q-btn
-            @click="setDrawingMode(2)"
-            color="negative"
-            size="sm"
-            icon="remove"
-            label="REMOVE"
-          />
-          <q-btn
-            @click="setDrawingMode(1)"
-            color="negative"
-            size="sm"
-            icon="remove"
-            label="TURN"
-          />
         </div>
       </div>
     </div>
-    <div class="col-2 text-center">{{ adding_type }}</div>
+    <div class="col-2 text-center"><compartment_props></compartment_props></div>
   </div>
 </template>
 
 <script>
 import * as PIXI from "pixi.js";
+import compartment_props from "components/compartment_props";
 
 export default {
+  components: {
+    compartment_props
+  },
   data() {
     return {
       adding_type: 0,
