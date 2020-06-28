@@ -90,6 +90,8 @@ export default {
         height: 0,
         aspect_ratio: 0.7
       },
+      current_x: 100,
+      current_syl: 30,
 
       pixi_app: null,
       components: [],
@@ -134,7 +136,6 @@ export default {
       // process current model components
       Object.keys(_components).forEach(key => {
         if (_components[key].type === "component") {
-          console.log(_components[key].subtype);
           this.addComponent(_components[key].subtype, _components[key]);
         }
       });
@@ -155,19 +156,27 @@ export default {
         props: null
       };
 
+      new_comp.props = _props;
+      new_comp.text_sprite = new PIXI.Text();
+      new_comp.text_sprite.style = {
+        fontFamily: "Arial",
+        fontSize: 8,
+        fill: 0x000000
+      };
+
       switch (type) {
         case "blood_compartment": // bloodcompartment
-          new_comp.props = _props;
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.text_sprite.text = _props.name;
+
+          break;
+        case "container": // bloodcompartment
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/compartment.svg"
           );
 
-          new_comp.text_sprite = new PIXI.Text();
-          new_comp.text_sprite.style = {
-            fontFamily: "Arial",
-            fontSize: 10,
-            fill: 0x000000
-          };
           new_comp.text_sprite.text = _props.name;
 
           break;
@@ -175,38 +184,72 @@ export default {
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/connector.svg"
           );
+          new_comp.text_sprite.text = _props.name;
+          break;
+        case "gas_connector": // bloodconnector
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/connector.svg"
+          );
+          new_comp.text_sprite.text = _props.name;
           break;
         case "gas_compartment": // gascompartment
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/air.svg");
+          new_comp.text_sprite.text = _props.name;
           break;
+
         case "pump": // pump
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/pump2.svg");
+          new_comp.text_sprite.text = _props.name;
           break;
         case "valve": // valve
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
+          new_comp.text_sprite.text = _props.name;
+          break;
+        case "shunt": // valve
+          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
+          new_comp.text_sprite.text = _props.name;
           break;
         case "exchanger": // exchanger
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/exchanger.svg"
           );
+          new_comp.text_sprite.text = _props.name;
           break;
         case "diffusor": // diffusor
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/diffusor.svg"
           );
+          new_comp.text_sprite.text = _props.name;
+          break;
+
+        default:
+          console.log("sssssssssss");
+          console.log(type);
           break;
       }
 
       new_comp.sprite.anchor.set(0.5);
       new_comp.text_sprite.anchor.set(0.5);
 
-      new_comp.sprite.width = 25;
-      new_comp.sprite.height = 25;
-      new_comp.sprite.x = this.canvas.width / 2;
-      new_comp.sprite.y = this.canvas.height / 2;
+      new_comp.sprite.width = 20;
+      new_comp.sprite.height = 20;
+      // new_comp.sprite.x = this.canvas.width / 2;
+      // new_comp.sprite.y = this.canvas.height / 2;
 
-      new_comp.text_sprite.x = this.canvas.width / 2;
-      new_comp.text_sprite.y = this.canvas.height / 2 + 20;
+      // new_comp.text_sprite.x = this.canvas.width / 2;
+      // new_comp.text_sprite.y = this.canvas.height / 2 + 20;
+
+      new_comp.sprite.x = this.current_x;
+      new_comp.sprite.y = this.current_syl;
+
+      new_comp.text_sprite.x = this.current_x;
+      new_comp.text_sprite.y = this.current_syl + 20;
+
+      this.current_x += 90;
+      if (this.current_x > this.canvas.width - 50) {
+        this.current_x = 100;
+        this.current_syl += 40;
+      }
 
       new_comp.sprite.interactive = true;
       new_comp.sprite.on("click", () => {

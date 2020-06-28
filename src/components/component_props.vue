@@ -377,7 +377,6 @@ export default {
       this.$set(this.component, "diff_other", _data["diff_other"]);
     },
     processDiffusor(_data) {
-      console.log(_data);
       this.$set(this.component, "is_enabled", _data["is_enabled"]);
       this.$set(this.component, "name", _data["name"]);
       this.$set(this.component, "subtype", _data["subtype"]);

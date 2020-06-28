@@ -86,7 +86,6 @@ export default {
       "message",
       _message => {
         if (_message.data.type === "model_props") {
-          console.log(_message.data.data);
           this.processData(_message.data.data);
         }
       }
