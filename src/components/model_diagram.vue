@@ -174,7 +174,7 @@ export default {
           break;
         case "container": // bloodcompartment
           new_comp.sprite = new PIXI.Sprite.from(
-            "statics/Sprites/compartment.svg"
+            "statics/Sprites/container_current.svg"
           );
 
           new_comp.text_sprite.text = _props.name;
@@ -182,13 +182,14 @@ export default {
           break;
         case "blood_connector": // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
-            "statics/Sprites/connector.svg"
+            "statics/Sprites/connector_current.svg"
           );
+          new_comp.sprite.rotation = Math.PI * 0.5;
           new_comp.text_sprite.text = _props.name;
           break;
         case "gas_connector": // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
-            "statics/Sprites/connector.svg"
+            "statics/Sprites/connector_gas_current.svg"
           );
           new_comp.text_sprite.text = _props.name;
           break;
@@ -202,11 +203,17 @@ export default {
           new_comp.text_sprite.text = _props.name;
           break;
         case "valve": // valve
-          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/valve_current.svg"
+          );
+
           new_comp.text_sprite.text = _props.name;
           break;
         case "shunt": // valve
-          new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
+          new_comp.sprite = new PIXI.Sprite.from(
+            "statics/Sprites/shunt_current.svg"
+          );
+          new_comp.sprite.rotation = Math.PI * 0.5;
           new_comp.text_sprite.text = _props.name;
           break;
         case "exchanger": // exchanger
@@ -233,22 +240,17 @@ export default {
 
       new_comp.sprite.width = 20;
       new_comp.sprite.height = 20;
-      // new_comp.sprite.x = this.canvas.width / 2;
-      // new_comp.sprite.y = this.canvas.height / 2;
-
-      // new_comp.text_sprite.x = this.canvas.width / 2;
-      // new_comp.text_sprite.y = this.canvas.height / 2 + 20;
 
       new_comp.sprite.x = this.current_x;
       new_comp.sprite.y = this.current_syl;
 
       new_comp.text_sprite.x = this.current_x;
-      new_comp.text_sprite.y = this.current_syl + 20;
+      new_comp.text_sprite.y = this.current_syl + 17;
 
       this.current_x += 90;
       if (this.current_x > this.canvas.width - 50) {
         this.current_x = 100;
-        this.current_syl += 40;
+        this.current_syl += 50;
       }
 
       new_comp.sprite.interactive = true;
@@ -313,8 +315,8 @@ export default {
         "statics/Sprites/compartment-old.svg"
       );
       this.selectedComponentSprite.anchor.set(0.5);
-      this.selectedComponentSprite.width = 100;
-      this.selectedComponentSprite.height = 100;
+      this.selectedComponentSprite.width = 75;
+      this.selectedComponentSprite.height = 75;
       this.selectedComponentSprite.x = 10;
       this.selectedComponentSprite.y = 10;
       this.selectedComponentSprite.alpha = 0.1;
