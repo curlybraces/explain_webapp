@@ -110,8 +110,10 @@ export default {
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
-        if (_message.data.type === "model_state") {
+        if (_message.data.type === "components") {
           //console.log(_message.data.data);
+          this.components = [];
+          this.models = [];
           this.processData(_message.data.data);
         }
       }
@@ -120,7 +122,14 @@ export default {
     this.initializeComponent();
   },
   methods: {
-    getModelState() {},
+    getModelState() {
+      this.$model.sendMessageToModelEngine({
+        type: "get",
+        subtype: "components",
+        target: null,
+        data: null
+      });
+    },
     processData(_model) {
       // process current model components
 
@@ -215,6 +224,7 @@ export default {
         this.selectedComponentSprite.x = clickedComponent.sprite.x;
         this.selectedComponentSprite.y = clickedComponent.sprite.y;
         this.selectedComponentSprite.visible = true;
+        this.$root.$emit("selected_component", clickedComponent["props"].name);
       }
     },
     moveSelectedSprite(e) {

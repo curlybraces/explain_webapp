@@ -8,10 +8,22 @@
       </q-card-section>
       <q-separator />
       <q-card-section>
+        <q-select
+          filled
+          dense
+          v-model="selection"
+          @input="selectionChanged"
+          :options="component_list"
+          label="components"
+        />
+      </q-card-section>
+      <q-card-section>
+        <q-separator />
         <div v-for="(value, property, index) in component" :key="index">
           <q-toggle
             v-if="typeof component[property] === 'boolean'"
             :label="property"
+            dense
             left-label
             size="xs"
             v-model="component[property]"
@@ -20,6 +32,7 @@
           <q-input
             v-if="typeof component[property] === 'string'"
             :label="property"
+            dense
             class="q-ma-sm"
             v-model="component[property]"
             filled
@@ -30,6 +43,7 @@
           <q-input
             v-if="typeof component[property] === 'number'"
             :label="property"
+            dense
             class="q-ma-sm"
             v-model="component[property]"
             filled
@@ -40,10 +54,20 @@
         </div>
 
         <q-btn
+          class="q-ma-sm"
           color="negative"
           size="sm"
           @click="updateComponentProps"
           label="UPDATE"
+        />
+
+        <q-btn
+          class="q-ma-sm"
+          color="negative"
+          size="sm"
+          @click="getComponentData('')"
+          icon="fas fa-sync-alt"
+          label=""
         />
       </q-card-section>
     </q-card>
@@ -55,27 +79,41 @@ export default {
   data() {
     return {
       event_listener: null,
+      selection: "",
+      component_list: [],
       component_name: "AA",
       component: {}
     };
   },
   mounted() {
+    // listen for incoming data from the ExplainModelEngine with the type 'component_props'
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
-        if (_message.data.type === "model_state") {
-          //console.log(_message.data.data);
+        if (_message.data.type === "component_props") {
           this.processData(_message.data.data);
         }
       }
     );
+    // listen for the event selected_component which determines whether or not the selected component has changed
+    this.$root.$on("selected_component", data => {
+      // change the active component name
+      this.component_name = data;
+      // get the components data from the ExplainEngine
+      this.getComponentData(this.component_name);
+      // change the dropbox selected item
+      this.selection = this.component_name;
+    });
   },
   methods: {
-    getData(comp_name) {
+    selectionChanged() {
+      this.getComponentData(this.selection);
+    },
+    getComponentData(comp_name) {
       this.component_name = comp_name;
       this.$model.sendMessageToModelEngine({
         type: "get",
-        subtype: "model_state",
+        subtype: "component_props",
         target: null,
         data: null
       });
@@ -83,6 +121,14 @@ export default {
     updateComponentProps() {},
     processData(model_state) {
       this.component = {};
+
+      // build component_list
+      this.component_list = [];
+      Object.keys(model_state).forEach(key => {
+        if (model_state[key].type === "component") {
+          this.component_list.push(model_state[key].name);
+        }
+      });
 
       // first find the type of the desired component
       switch (model_state[this.component_name].subtype) {
@@ -163,7 +209,6 @@ export default {
       this.$set(this.component, "in_k1", _data["in_k1"]);
       this.$set(this.component, "in_k2", _data["in_k2"]);
     },
-
     processPump(_data) {
       this.$set(this.component, "is_enabled", _data["is_enabled"]);
       this.$set(this.component, "name", _data["name"]);

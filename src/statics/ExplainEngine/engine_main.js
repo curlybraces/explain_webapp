@@ -106,6 +106,31 @@ onmessage = function(e) {
           this.engine_datalogger.getModelStateVerbose(0, "")
         );
       }
+      if (e.data.subtype === "component_props") {
+        SendMessage(
+          "component_props",
+          null,
+          null,
+          this.engine_datalogger.getModelStateVerbose(0, "")
+        );
+      }
+
+      if (e.data.subtype === "components") {
+        SendMessage(
+          "components",
+          null,
+          null,
+          this.engine_datalogger.getModelStateVerbose(0, "")
+        );
+      }
+      if (e.data.subtype === "models") {
+        SendMessage(
+          "models",
+          null,
+          null,
+          this.engine_datalogger.getModelStateVerbose(0, "")
+        );
+      }
       break;
 
     default:

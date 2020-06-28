@@ -63,8 +63,7 @@ export default {
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
-        if (_message.data.type === "model_state") {
-          //console.log(_message.data.data);
+        if (_message.data.type === "models") {
           this.processData(_message.data.data);
         }
       }
@@ -75,7 +74,7 @@ export default {
       this.model_name = model_name;
       this.$model.sendMessageToModelEngine({
         type: "get",
-        subtype: "model_state",
+        subtype: "models",
         target: null,
         data: null
       });
