@@ -97,6 +97,17 @@ onmessage = function(e) {
       }
       break;
 
+    case "get":
+      if (e.data.subtype === "model_state") {
+        SendMessage(
+          "model_state",
+          null,
+          null,
+          this.engine_datalogger.getModelStateVerbose(0, "")
+        );
+      }
+      break;
+
     default:
       this.console.log(
         "model received unknown command ",
