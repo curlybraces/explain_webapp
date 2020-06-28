@@ -1,10 +1,16 @@
 <template>
   <div class="row justify-center items-start">
-    <div class="col-2 text-center">controls</div>
+    <div class="col-2 text-center"><model_props></model_props></div>
     <div class="col text-center">
       <div class="col text-center">
         <div id="stage" />
         <div class="row q-gutter-xs justify-center">
+          <q-btn
+            color="primary"
+            @click="getModelState"
+            size="sm"
+            label="analyze"
+          />
           <q-btn color="primary" size="sm" icon="add" label="COMPARTMENT">
             <q-menu>
               <q-item
@@ -61,17 +67,19 @@
         </div>
       </div>
     </div>
-    <div class="col-2 text-center"><compartment_props></compartment_props></div>
+    <div class="col-2 text-center"><component_props></component_props></div>
   </div>
 </template>
 
 <script>
 import * as PIXI from "pixi.js";
-import compartment_props from "components/compartment_props";
+import component_props from "components/component_props";
+import model_props from "components/model_props";
 
 export default {
   components: {
-    compartment_props
+    component_props,
+    model_props
   },
   data() {
     return {
@@ -99,9 +107,29 @@ export default {
   },
 
   mounted() {
+    this.event_listener = this.$model.modelEngine.addEventListener(
+      "message",
+      _message => {
+        if (_message.data.type === "model_state") {
+          //console.log(_message.data.data);
+          this.processData(_message.data.data);
+        }
+      }
+    );
+
     this.initializeComponent();
   },
   methods: {
+    getModelState() {},
+    processData(_model) {
+      // process current model components
+
+      Object.keys(_model).forEach(key => {
+        if (_model[key].subtype === "blood_compartment") {
+          this.addComponent(0, _model[key]);
+        }
+      });
+    },
     setDrawingMode(_mode) {
       if (this.drawing_mode === _mode) {
         this.drawing_mode = 0;
@@ -109,16 +137,29 @@ export default {
         this.drawing_mode = _mode;
       }
     },
-    addComponent(type) {
+    addExistingComponent(component) {},
+    addComponent(type, _props = null) {
       let new_comp = {
-        sprite: null
+        sprite: null,
+        text_sprite: null,
+        props: null
       };
 
       switch (type) {
         case 0: // bloodcompartment
+          new_comp.props = _props;
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/compartment.svg"
           );
+
+          new_comp.text_sprite = new PIXI.Text();
+          new_comp.text_sprite.style = {
+            fontFamily: "Arial",
+            fontSize: 10,
+            fill: 0x000000
+          };
+          new_comp.text_sprite.text = _props.name;
+
           break;
         case 1: // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
@@ -147,16 +188,23 @@ export default {
       }
 
       new_comp.sprite.anchor.set(0.5);
+      new_comp.text_sprite.anchor.set(0.5);
+
       new_comp.sprite.width = 25;
       new_comp.sprite.height = 25;
       new_comp.sprite.x = this.canvas.width / 2;
       new_comp.sprite.y = this.canvas.height / 2;
+
+      new_comp.text_sprite.x = this.canvas.width / 2;
+      new_comp.text_sprite.y = this.canvas.height / 2 + 20;
+
       new_comp.sprite.interactive = true;
       new_comp.sprite.on("click", () => {
         this.selectComponent(new_comp);
       });
 
       this.pixi_app.stage.addChild(new_comp.sprite);
+      this.pixi_app.stage.addChild(new_comp.text_sprite);
     },
     selectComponent(clickedComponent) {
       if (this.selectedComponent === clickedComponent) {
@@ -175,6 +223,8 @@ export default {
 
         this.selectedComponent.sprite.x = pos.x;
         this.selectedComponent.sprite.y = pos.y;
+        this.selectedComponent.text_sprite.x = pos.x;
+        this.selectedComponent.text_sprite.y = pos.y + 20;
         this.selectedComponentSprite.x = pos.x;
         this.selectedComponentSprite.y = pos.y;
       }
