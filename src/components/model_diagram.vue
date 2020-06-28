@@ -7,7 +7,7 @@
         <div class="row q-gutter-xs justify-center">
           <q-btn
             color="primary"
-            @click="getModelState"
+            @click="getComponents"
             size="sm"
             label="analyze"
           />
@@ -122,7 +122,7 @@ export default {
     this.initializeComponent();
   },
   methods: {
-    getModelState() {
+    getComponents() {
       this.$model.sendMessageToModelEngine({
         type: "get",
         subtype: "components",
@@ -130,12 +130,12 @@ export default {
         data: null
       });
     },
-    processData(_model) {
+    processData(_components) {
       // process current model components
-
-      Object.keys(_model).forEach(key => {
-        if (_model[key].subtype === "blood_compartment") {
-          this.addComponent(0, _model[key]);
+      Object.keys(_components).forEach(key => {
+        if (_components[key].type === "component") {
+          console.log(_components[key].subtype);
+          this.addComponent(_components[key].subtype, _components[key]);
         }
       });
     },
@@ -147,6 +147,7 @@ export default {
       }
     },
     addExistingComponent(component) {},
+
     addComponent(type, _props = null) {
       let new_comp = {
         sprite: null,
@@ -155,7 +156,7 @@ export default {
       };
 
       switch (type) {
-        case 0: // bloodcompartment
+        case "blood_compartment": // bloodcompartment
           new_comp.props = _props;
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/compartment.svg"
@@ -170,26 +171,26 @@ export default {
           new_comp.text_sprite.text = _props.name;
 
           break;
-        case 1: // bloodconnector
+        case "blood_connector": // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/connector.svg"
           );
           break;
-        case 2: // gascompartment
+        case "gas_compartment": // gascompartment
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/air.svg");
           break;
-        case 3: // pump
+        case "pump": // pump
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/pump2.svg");
           break;
-        case 4: // valve
+        case "valve": // valve
           new_comp.sprite = new PIXI.Sprite.from("statics/Sprites/valve 2.svg");
           break;
-        case 9: // exchanger
+        case "exchanger": // exchanger
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/exchanger.svg"
           );
           break;
-        case 10: // diffusor
+        case "diffusor": // diffusor
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/diffusor.svg"
           );

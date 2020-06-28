@@ -123,9 +123,9 @@ onmessage = function(e) {
           this.engine_datalogger.getModelStateVerbose(0, "")
         );
       }
-      if (e.data.subtype === "models") {
+      if (e.data.subtype === "model_props") {
         SendMessage(
-          "models",
+          "model_props",
           null,
           null,
           this.engine_datalogger.getModelStateVerbose(0, "")

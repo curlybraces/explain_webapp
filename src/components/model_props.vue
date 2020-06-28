@@ -8,6 +8,17 @@
       </q-card-section>
       <q-separator />
       <q-card-section>
+        <q-select
+          filled
+          dense
+          v-model="selection"
+          @input="selectionChanged"
+          :options="model_list"
+          label="models"
+        />
+      </q-card-section>
+      <q-card-section>
+        <q-separator />
         <div v-for="(value, property, index) in model" :key="index">
           <q-toggle
             v-if="typeof model[property] === 'boolean'"
@@ -45,6 +56,15 @@
           @click="getData('breathing')"
           label="UPDATE"
         />
+
+        <q-btn
+          class="q-ma-sm"
+          color="negative"
+          size="sm"
+          @click="getModelData('')"
+          icon="fas fa-sync-alt"
+          label=""
+        />
       </q-card-section>
     </q-card>
   </div>
@@ -55,6 +75,8 @@ export default {
   data() {
     return {
       event_listener: null,
+      selection: "",
+      model_list: [],
       model_name: "AA",
       model: {}
     };
@@ -63,18 +85,22 @@ export default {
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
-        if (_message.data.type === "models") {
+        if (_message.data.type === "model_props") {
+          console.log(_message.data.data);
           this.processData(_message.data.data);
         }
       }
     );
   },
   methods: {
-    getData(model_name) {
+    selectionChanged() {
+      this.getModelData(this.selection);
+    },
+    getModelData(model_name) {
       this.model_name = model_name;
       this.$model.sendMessageToModelEngine({
         type: "get",
-        subtype: "models",
+        subtype: "model_props",
         target: null,
         data: null
       });
@@ -82,6 +108,14 @@ export default {
     updateComponentProps() {},
     processData(model_state) {
       this.model = {};
+
+      // build model list
+      this.model_list = [];
+      Object.keys(model_state).forEach(key => {
+        if (model_state[key].type === "model") {
+          this.model_list.push(model_state[key].name);
+        }
+      });
 
       Object.keys(model_state[this.model_name]).forEach(prop => {
         if (typeof model_state[this.model_name][prop] === "number") {
