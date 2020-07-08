@@ -23,6 +23,9 @@ class BloodCompartment {
 
     this.analyzer_timer = 0;
     this.analyzer_interval = 3;
+
+    this.temp_pv = [];
+    this.pv = [];
   }
 
   calcElastance() {
@@ -179,6 +182,17 @@ class BloodCompartment {
   }
 
   analyzePressures() {
+    this.temp_pv.push({
+      t: this.model.model_time_total,
+      p: this.pres_current,
+      v: this.vol_current
+    });
+
+    if (this.temp_pv.length === 30) {
+      this.pv = this.temp_pv;
+      this.temp_pv = [];
+    }
+
     if (this.analyzer_timer > this.analyzer_interval) {
       this.analyzer_timer = 0;
 

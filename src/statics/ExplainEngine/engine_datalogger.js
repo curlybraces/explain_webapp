@@ -1,7 +1,5 @@
 class Datalogger {
-  
   constructor(_model) {
-
     // declare a reference to the global model which is injected in this class
     this.model = _model;
     this.datalogger_timer = 0;
@@ -11,13 +9,13 @@ class Datalogger {
     this.model_states = [];
   }
 
-  SendMessage = function (type_mes, subtype_mes, target_mes, data_mes) {
+  SendMessage = function(type_mes, subtype_mes, target_mes, data_mes) {
     postMessage({
       id: ID,
       type: type_mes,
       subtype: subtype_mes,
       target: target_mes,
-      data: data_mes,
+      data: data_mes
     });
   };
 
@@ -36,23 +34,25 @@ class Datalogger {
     model_state["stepsize"] = this.model.modeling_stepsize;
 
     // iterate over all components
-    Object.keys(this.model.components).forEach((key) => {
+    Object.keys(this.model.components).forEach(key => {
       // shallow copy the component
       let newObj = Object.assign({}, this.model.components[key]);
-      
+
       // delete the associated referenced model (creates a circular copy) and other objects
       delete newObj.model;
       delete newObj.comp1;
       delete newObj.comp2;
+      delete newObj.temp_volumes;
+      delete newObj.temp_pressures;
 
       // store the copy into the model_state
       model_state[newObj.name] = newObj;
     });
 
-    Object.keys(this.model.models).forEach((key) => {
+    Object.keys(this.model.models).forEach(key => {
       // shallow copy the model
       let newObj = Object.assign({}, this.model.models[key]);
-      
+
       // delete the associated referenced model (creates a circular copy)
       delete newObj.model;
 
