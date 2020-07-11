@@ -44,6 +44,7 @@ export default {
 
     return {
       chartId: null,
+      charts: [],
       channels: [
         {
           component: "LV",
@@ -69,10 +70,7 @@ export default {
           color: "#000",
           width: 1
         }
-      ],
-      title: "left ventricle pressure",
-      numberOfDatapoints: 333,
-      series: []
+      ]
     };
   },
   methods: {
@@ -96,7 +94,10 @@ export default {
         defaultAxisXTickStrategy: AxisTickStrategies.Numeric
       });
 
-      _chart.setTitle(this.title);
+      _chart.channels = _channels;
+      _chart.series = [];
+
+      _chart.setTitle("");
 
       // Configurure axes
       let _xAxis = _chart
@@ -110,28 +111,32 @@ export default {
         .setInterval(0, 100);
 
       // add a lineseries for each channel
-      this.numberOfDatapoints = 333;
       _channels.forEach(channel => {
         const serie = _chart
           .addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
           .setName(channel.component)
-          .setMaxPointCount(this.numberOfDatapoints)
+          .setMaxPointCount(333)
           .setStrokeStyle(style =>
             style.setFillStyle(fill => fill.setColor(ColorHEX(channel.color)))
           )
           .setStrokeStyle(style => style.setThickness(channel.width));
 
-        this.series.push(serie);
+        _chart.series.push(serie);
       });
 
       return _chart;
     },
-    processData(_data) {
-      this.channels.forEach((channel, i) => {
+    updateData(_data) {
+      this.charts.forEach(chart => {
+        this.processData(chart, _data);
+      });
+    },
+    processData(_chart, _data) {
+      _chart.channels.forEach((channel, i) => {
         switch (channel.parameter) {
           case "pv_hires":
             _data[channel.component].pv.forEach(data => {
-              this.series[i].add({
+              _chart.series[i].add({
                 x: data.p,
                 y: data.v * channel.factor
               });
@@ -139,7 +144,7 @@ export default {
             break;
           case "vp_hires":
             _data[channel.component].pv.forEach(data => {
-              this.series[i].add({
+              _chart.series[i].add({
                 x: data.v * channel.factor,
                 y: data.p
               });
@@ -147,7 +152,7 @@ export default {
             break;
           case "p_hires":
             _data[channel.component].pv.forEach(data => {
-              this.series[i].add({
+              _chart.series[i].add({
                 x: data.t,
                 y: data.p * channel.factor
               });
@@ -155,14 +160,14 @@ export default {
             break;
           case "v_hires":
             _data[channel.component].pv.forEach(data => {
-              this.series[i].add({
+              _chart.series[i].add({
                 x: data.t,
                 y: data.v * channel.factor
               });
             });
             break;
           default:
-            this.series[i].add({
+            _chart.series[i].add({
               x: _data.time,
               y:
                 _data[channel.component][channel.parameter] * channel.factor +
@@ -172,6 +177,22 @@ export default {
             break;
         }
       });
+    },
+    initializeDashboard(_dashboardProps, _charts) {
+      this.createDashboard();
+
+      _charts.forEach(chart => {
+        this.charts.push(this.createChart(this.channels));
+      });
+
+      this.event_listener = this.$model.modelEngine.addEventListener(
+        "message",
+        _message => {
+          if (_message.data.type === "state") {
+            this.updateData(_message.data.data);
+          }
+        }
+      );
     }
   },
   beforeMount() {
@@ -179,21 +200,13 @@ export default {
     this.chartId = Math.trunc(Math.random() * 1000000);
   },
   mounted() {
-    this.createDashboard();
-    this.chart = this.createChart(this.channels);
-    this.event_listener = this.$model.modelEngine.addEventListener(
-      "message",
-      _message => {
-        if (_message.data.type === "state") {
-          //console.log(_message.data.data);
-          this.processData(_message.data.data);
-        }
-      }
-    );
+    this.initializeDashboard(null, ["chart1"]);
   },
+
   beforeDestroy() {
     // "dispose" should be called when the component is unmounted to free all the resources used by the chart
-    this.chart.dispose();
+    this.dashboard = null;
+    this.charts = null;
   }
 };
 </script>
