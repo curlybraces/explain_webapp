@@ -1,28 +1,37 @@
 <template>
-  <div :id="chartId" class="fill"></div>
+  <div>
+    <div :id="chartId" class="fill"></div>
+  </div>
 </template>
 
 <script>
 import {
+  Point,
+  SolidLine,
+  SolidFill,
+  MPoint,
+  LineSeries,
+  ChartXY,
+  DashboardBasicOptions,
+  AxisTickStrategies,
+  Dashboard,
   lightningChart,
+  Themes,
   DataPatterns,
   AxisScrollStrategies,
-  emptyFill,
-  emptyTick,
-  UIOrigins,
-  emptyLine,
-  SeriesXYFormatter,
-  LineSeries,
-  UILayoutBuilders,
-  UIDraggingModes,
+  FormattingRange,
   UIElementBuilders,
-  SolidFill,
+  UIOrigins,
   ColorHEX,
-  UIBackgrounds,
-  AxisTickStrategies,
-  SolidLine,
+  VisibleTicks,
+  IntensityGridSeries,
   ColorRGBA,
-  Themes
+  LUT,
+  PalettedFill,
+  Axis,
+  emptyLine,
+  emptyTick,
+  emptyFill
 } from "@arction/lcjs";
 
 export default {
@@ -32,62 +41,137 @@ export default {
     // If the chart variable would be added in the return object, Vue would attach the observers and
     // every time LightningChart JS made a change to any of it's internal variables, vue would try to observe the change and update.
     // Observing would slow down the chart a lot.
-    this.chart = null;
+
     return {
       chartId: null,
+      channels: [
+        {
+          component: "LV",
+          parameter: "pres_current",
+          factor: 1.0,
+          offset: 0,
+          color: "#00f",
+          width: 1
+        },
+        {
+          component: "LA",
+          parameter: "vol_current",
+          factor: 1000.0,
+          offset: 0,
+          color: "#f00",
+          width: 1
+        },
+        {
+          component: "ecg",
+          parameter: "ecg_signal",
+          factor: 0.3,
+          offset: 20,
+          color: "#000",
+          width: 1
+        }
+      ],
       title: "left ventricle pressure",
       numberOfDatapoints: 333,
-      series1: null,
-      series2: null,
-      axisX: null,
-      axisY: null,
-      minY: 0,
-      maxY: 100,
-      x_window: 5
+      series: []
     };
   },
   methods: {
-    createChart() {
-      // Create chartXY
-      this.chart = lightningChart().ChartXY({
-        theme: Themes.light,
-        containerId: `${this.chartId}`,
+    createDashboard() {
+      this.dashboard = lightningChart()
+        .Dashboard({
+          containerId: `${this.chartId}`,
+          numberOfColumns: 1,
+          numberOfRows: 1,
+          theme: Themes.light
+        })
+        .setSplitterStyle(style => style.setThickness(5));
+    },
+    createChart(_channels) {
+      // Configure chart -> chartXY
+      let _chart = this.dashboard.createChartXY({
+        columnIndex: 0,
+        columnSpan: 1,
+        rowIndex: 0,
+        rowSpan: 1,
         defaultAxisXTickStrategy: AxisTickStrategies.Numeric
       });
-      this.chart.setTitle(this.title);
 
-      // Configurure Axes Scrolling modes.
-      this.axisX = this.chart.getDefaultAxisX();
-      // Scroll along with incoming data.
-      this.axisX.setScrollStrategy(AxisScrollStrategies.progressive);
-      this.axisX.setInterval(0, this.x_window);
+      _chart.setTitle(this.title);
 
-      this.axisY = this.chart.getDefaultAxisY();
-      // Keep same interval always.
-      this.axisY.setScrollStrategy(undefined);
-      this.axisY.setInterval(this.minY, this.maxY);
+      // Configurure axes
+      let _xAxis = _chart
+        .getDefaultAxisX()
+        .setScrollStrategy(AxisScrollStrategies.progressive)
+        .setInterval(0, 5);
 
-      this.series1 = this.chart
-        .addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
-        .setMaxPointCount(this.numberOfDatapoints * 5);
-      this.series2 = this.chart
-        .addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
-        .setMaxPointCount(this.numberOfDatapoints * 5);
+      let _yAxis = _chart
+        .getDefaultAxisY()
+        .setScrollStrategy(undefined)
+        .setInterval(0, 100);
 
-      this.series1.setStrokeStyle(style => style.setThickness(1));
-      this.series2.setStrokeStyle(style => style.setThickness(1));
+      // add a lineseries for each channel
+      this.numberOfDatapoints = 333;
+      _channels.forEach(channel => {
+        const serie = _chart
+          .addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
+          .setName(channel.component)
+          .setMaxPointCount(this.numberOfDatapoints)
+          .setStrokeStyle(style =>
+            style.setFillStyle(fill => fill.setColor(ColorHEX(channel.color)))
+          )
+          .setStrokeStyle(style => style.setThickness(channel.width));
+
+        this.series.push(serie);
+      });
+
+      return _chart;
     },
     processData(_data) {
-      // _data["LV"].pv.forEach(data => {
-      //   this.series1.add({
-      //     x: data.t,
-      //     y: data.v
-      //   });
-      // });
-
-      this.series1.add({ x: _data.time, y: _data["LV"].vol_current * 1000 });
-      this.series2.add({ x: _data.time, y: _data["LV"].pres_current });
-      //console.log(_data["LV"].pressures);
+      this.channels.forEach((channel, i) => {
+        switch (channel.parameter) {
+          case "pv_hires":
+            _data[channel.component].pv.forEach(data => {
+              this.series[i].add({
+                x: data.p,
+                y: data.v * channel.factor
+              });
+            });
+            break;
+          case "vp_hires":
+            _data[channel.component].pv.forEach(data => {
+              this.series[i].add({
+                x: data.v * channel.factor,
+                y: data.p
+              });
+            });
+            break;
+          case "p_hires":
+            _data[channel.component].pv.forEach(data => {
+              this.series[i].add({
+                x: data.t,
+                y: data.p * channel.factor
+              });
+            });
+            break;
+          case "v_hires":
+            _data[channel.component].pv.forEach(data => {
+              this.series[i].add({
+                x: data.t,
+                y: data.v * channel.factor
+              });
+            });
+            break;
+          default:
+            this.series[i].add({
+              x: _data.time,
+              y:
+                _data[channel.component][channel.parameter] * channel.factor +
+                channel.offset,
+              color: "#0FF0000"
+            });
+            break;
+        }
+      });
     }
   },
   beforeMount() {
@@ -95,7 +179,8 @@ export default {
     this.chartId = Math.trunc(Math.random() * 1000000);
   },
   mounted() {
-    this.createChart();
+    this.createDashboard();
+    this.chart = this.createChart(this.channels);
     this.event_listener = this.$model.modelEngine.addEventListener(
       "message",
       _message => {
@@ -115,7 +200,7 @@ export default {
 
 <style scoped>
 .fill {
-  height: 500px;
-  width: 100%;
+  height: 300px;
+  width: 75%;
 }
 </style>
