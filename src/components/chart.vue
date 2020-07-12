@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <div :id="chartId" class="fill"></div>
-  </div>
+  <div :id="chartId"></div>
 </template>
 
 <script>
@@ -26,7 +24,6 @@ import {
   VisibleTicks,
   IntensityGridSeries,
   ColorRGBA,
-  LUT,
   PalettedFill,
   Axis,
   emptyLine,
@@ -44,74 +41,55 @@ export default {
 
     return {
       chartId: null,
-      charts: [],
-      channels: [
-        {
-          component: "LV",
-          parameter: "pres_current",
-          factor: 1.0,
-          offset: 0,
-          color: "#00f",
-          width: 1
-        },
-        {
-          component: "LA",
-          parameter: "vol_current",
-          factor: 1000.0,
-          offset: 0,
-          color: "#f00",
-          width: 1
-        },
-        {
-          component: "ecg",
-          parameter: "ecg_signal",
-          factor: 0.3,
-          offset: 20,
-          color: "#000",
-          width: 1
-        }
-      ]
+      charts: []
     };
   },
   methods: {
-    createDashboard() {
+    createDashboard(_dashboardProps) {
       this.dashboard = lightningChart()
-        .Dashboard({
-          containerId: `${this.chartId}`,
-          numberOfColumns: 1,
-          numberOfRows: 1,
-          theme: Themes.light
-        })
-        .setSplitterStyle(style => style.setThickness(5));
+        .Dashboard(_dashboardProps)
+        .setSplitterStyle(style => style.setThickness(5))
+        .setHeight(_dashboardProps.height)
+        .setWidth(_dashboardProps.width)
+        .setSplitterStyle(
+          new SolidLine({
+            thickness: 2,
+            fillStyle: new SolidFill({ color: ColorHEX("#ddd") })
+          })
+        );
     },
-    createChart(_channels) {
+    createChart(_chartProps) {
       // Configure chart -> chartXY
       let _chart = this.dashboard.createChartXY({
-        columnIndex: 0,
-        columnSpan: 1,
-        rowIndex: 0,
-        rowSpan: 1,
+        columnIndex: _chartProps.columnIndex,
+        columnSpan: _chartProps.columnSpan,
+        rowIndex: _chartProps.rowIndex,
+        rowSpan: _chartProps.rowSpan,
         defaultAxisXTickStrategy: AxisTickStrategies.Numeric
       });
-
-      _chart.channels = _channels;
+      _chart.setTitle(_chartProps.title);
+      _chart.setPadding({
+        top: _chartProps.padding_top,
+        bottom: _chartProps.padding_bottom,
+        left: _chartProps.padding_left,
+        right: _chartProps.padding_right
+      });
+      _chart.channels = _chartProps.channels;
       _chart.series = [];
-
-      _chart.setTitle("");
 
       // Configurure axes
       let _xAxis = _chart
         .getDefaultAxisX()
         .setScrollStrategy(AxisScrollStrategies.progressive)
-        .setInterval(0, 5);
+        .setInterval(_chartProps.min_x, _chartProps.max_x);
 
       let _yAxis = _chart
         .getDefaultAxisY()
         .setScrollStrategy(undefined)
-        .setInterval(0, 100);
+        .setInterval(_chartProps.min_y, _chartProps.max_y);
 
       // add a lineseries for each channel
-      _channels.forEach(channel => {
+      _chartProps.channels.forEach(channel => {
         const serie = _chart
           .addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
           .setName(channel.component)
@@ -179,10 +157,87 @@ export default {
       });
     },
     initializeDashboard(_dashboardProps, _charts) {
-      this.createDashboard();
+      _dashboardProps = {
+        height: 300,
+        width: 1000,
+        containerId: `${this.chartId}`,
+        numberOfColumns: 2,
+        numberOfRows: 1,
+        theme: Themes.light
+      };
+      this.createDashboard(_dashboardProps);
 
-      _charts.forEach(chart => {
-        this.charts.push(this.createChart(this.channels));
+      _charts = [
+        {
+          title: "ventricular pressures",
+          columnIndex: 0,
+          columnSpan: 1,
+          rowIndex: 0,
+          rowSpan: 1,
+          padding_top: 5,
+          padding_bottom: 5,
+          padding_left: 5,
+          padding_right: 20,
+          min_x: 0,
+          max_x: 5,
+          min_y: 0,
+          max_y: 100,
+          channels: [
+            {
+              component: "LV",
+              parameter: "pres_current",
+              factor: 1.0,
+              offset: 0,
+              color: "#00f",
+              width: 1
+            },
+            {
+              component: "RV",
+              parameter: "pres_current",
+              factor: 1.0,
+              offset: 0,
+              color: "#00f",
+              width: 1
+            }
+          ]
+        },
+        {
+          title: "atrial pressures",
+          columnIndex: 1,
+          columnSpan: 1,
+          rowIndex: 0,
+          rowSpan: 1,
+          padding_top: 5,
+          padding_bottom: 5,
+          padding_left: 5,
+          padding_right: 20,
+          min_x: 0,
+          max_x: 5,
+          min_y: 0,
+          max_y: 10,
+          channels: [
+            {
+              component: "LA",
+              parameter: "pres_current",
+              factor: 1.0,
+              offset: 0,
+              color: "#f0f",
+              width: 1
+            },
+            {
+              component: "RA",
+              parameter: "pres_current",
+              factor: 1.0,
+              offset: 0,
+              color: "#f0f",
+              width: 1
+            }
+          ]
+        }
+      ];
+
+      _charts.forEach(chartProps => {
+        this.charts.push(this.createChart(chartProps));
       });
 
       this.event_listener = this.$model.modelEngine.addEventListener(
@@ -211,9 +266,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.fill {
-  height: 300px;
-  width: 75%;
-}
-</style>
+<style scoped></style>
