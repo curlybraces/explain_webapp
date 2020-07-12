@@ -4,10 +4,8 @@
 
 <script>
 import {
-  Point,
   SolidLine,
   SolidFill,
-  MPoint,
   LineSeries,
   ChartXY,
   DashboardBasicOptions,
@@ -17,18 +15,10 @@ import {
   Themes,
   DataPatterns,
   AxisScrollStrategies,
-  FormattingRange,
-  UIElementBuilders,
-  UIOrigins,
   ColorHEX,
-  VisibleTicks,
-  IntensityGridSeries,
   ColorRGBA,
-  PalettedFill,
   Axis,
-  emptyLine,
-  emptyTick,
-  emptyFill
+  emptyLine
 } from "@arction/lcjs";
 
 export default {
@@ -41,7 +31,8 @@ export default {
 
     return {
       chartId: null,
-      charts: []
+      charts: [],
+      counter: 0
     };
   },
   methods: {
@@ -112,22 +103,6 @@ export default {
     processData(_chart, _data) {
       _chart.channels.forEach((channel, i) => {
         switch (channel.parameter) {
-          case "pv_hires":
-            _data[channel.component].pv.forEach(data => {
-              _chart.series[i].add({
-                x: data.p,
-                y: data.v * channel.factor
-              });
-            });
-            break;
-          case "vp_hires":
-            _data[channel.component].pv.forEach(data => {
-              _chart.series[i].add({
-                x: data.v * channel.factor,
-                y: data.p
-              });
-            });
-            break;
           case "p_hires":
             _data[channel.component].pv.forEach(data => {
               _chart.series[i].add({
@@ -158,10 +133,10 @@ export default {
     },
     initializeDashboard(_dashboardProps, _charts) {
       _dashboardProps = {
-        height: 300,
-        width: 1000,
+        height: 250,
+        width: 500,
         containerId: `${this.chartId}`,
-        numberOfColumns: 2,
+        numberOfColumns: 1,
         numberOfRows: 1,
         theme: Themes.light
       };
@@ -196,40 +171,15 @@ export default {
               parameter: "pres_current",
               factor: 1.0,
               offset: 0,
-              color: "#00f",
-              width: 1
-            }
-          ]
-        },
-        {
-          title: "atrial pressures",
-          columnIndex: 1,
-          columnSpan: 1,
-          rowIndex: 0,
-          rowSpan: 1,
-          padding_top: 5,
-          padding_bottom: 5,
-          padding_left: 5,
-          padding_right: 20,
-          min_x: 0,
-          max_x: 5,
-          min_y: 0,
-          max_y: 10,
-          channels: [
-            {
-              component: "LA",
-              parameter: "pres_current",
-              factor: 1.0,
-              offset: 0,
-              color: "#f0f",
+              color: "#f00",
               width: 1
             },
             {
-              component: "RA",
+              component: "AA",
               parameter: "pres_current",
               factor: 1.0,
               offset: 0,
-              color: "#f0f",
+              color: "#000",
               width: 1
             }
           ]
