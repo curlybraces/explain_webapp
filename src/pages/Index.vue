@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <chart class="row justify-center"></chart>
+    <model_diagram class="row justify-center"></model_diagram>
     <div class="row justify-center">
       <controller></controller>
     </div>
@@ -15,8 +15,8 @@ import chart from "components/timebased_chart";
 export default {
   name: "PageIndex",
   components: {
-    chart,
-    controller
+    controller,
+    model_diagram
   }
 };
 </script>

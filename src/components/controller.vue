@@ -22,7 +22,7 @@
           <q-btn
             color="negative"
             icon-right="autorenew"
-            @click="stopModel"
+            @click="calculateModel"
             label=""
           />
         </div>
@@ -34,6 +34,14 @@
 <script>
 export default {
   methods: {
+    calculateModel() {
+      this.$model.sendMessageToModelEngine({
+        type: "cmd",
+        subtype: "calculate",
+        target: null,
+        data: 30
+      });
+    },
     startModel() {
       this.$model.sendMessageToModelEngine({
         type: "cmd",

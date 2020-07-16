@@ -344,8 +344,14 @@ const calculateModel = function(time_to_calculate) {
       current_model.model_time_total
     )} seconds.`
   ]);
+
   SendMessage("mes", null, null, [
     `calculating for ${time_to_calculate} seconds in ${no_needed_steps} steps.`
+  ]);
+
+  SendMessage("calc_frame", null, null, [
+    current_model.model_time_total,
+    current_model.model_time_total + time_to_calculate
   ]);
 
   // reset the model_time_run

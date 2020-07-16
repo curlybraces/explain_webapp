@@ -95,6 +95,11 @@ export default {
 
       return _chart;
     },
+    updateCalcFrame(_data) {
+      this.charts.forEach(chart => {
+        chart.getDefaultAxisX().setInterval(_data[0], _data[1]);
+      });
+    },
     updateData(_data) {
       this.charts.forEach(chart => {
         this.processData(chart, _data);
@@ -195,6 +200,9 @@ export default {
         _message => {
           if (_message.data.type === "state") {
             this.updateData(_message.data.data);
+          }
+          if (_message.data.type === "calc_frame") {
+            this.updateCalcFrame(_message.data.data);
           }
         }
       );

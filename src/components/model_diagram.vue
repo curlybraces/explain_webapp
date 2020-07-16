@@ -76,6 +76,20 @@ import * as PIXI from "pixi.js";
 import component_props from "components/component_props";
 import model_props from "components/model_props";
 
+var rgbToHex = function(rgb) {
+  var hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+    hex = "0" + hex;
+  }
+  return hex;
+};
+var fullColorHex = function(r, g, b) {
+  var red = rgbToHex(r);
+  var green = rgbToHex(g);
+  var blue = rgbToHex(b);
+  return red + green + blue;
+};
+
 export default {
   components: {
     component_props,
@@ -88,14 +102,15 @@ export default {
       canvas: {
         width: 0,
         height: 0,
-        aspect_ratio: 0.7
+        aspect_ratio: 0.7,
+        scaling: 25
       },
       current_x: 100,
       current_syl: 30,
 
       pixi_app: null,
-      components: [],
-      models: [],
+      components: {},
+      models: {},
       selectedComponent: null,
       selectedModel: null,
       selectedComponentFrom: null,
@@ -104,7 +119,9 @@ export default {
       selectedComponentSprite: null,
       moveSprite: null,
       turnSprite: null,
-      removeSrpite: null
+      removeSrpite: null,
+      resizeSprite: null,
+      hideInactive: false
     };
   },
 
@@ -114,10 +131,11 @@ export default {
       _message => {
         if (_message.data.type === "components") {
           //console.log(_message.data.data);
-          this.components = [];
-          this.models = [];
           this.processData(_message.data.data);
         }
+        // if (_message.data.type === "state") {
+        //   this.updateData(_message.data.data);
+        // }
       }
     );
 
@@ -132,12 +150,102 @@ export default {
         data: null
       });
     },
+    CalculateRadius(volume) {
+      let _cubicRadius = volume / ((4.0 / 3.0) * Math.PI);
+      let _radius = Math.pow(_cubicRadius, 1.0 / 3.0);
+      return _radius;
+    },
+    CalculateColor(to2) {
+      if (to2 > 8) {
+        to2 = 8;
+      }
+      let remap = this.Remap(to2, 0, 8, -2, 1);
+      if (remap < 0) remap = 0;
+      let red = (remap * 210).toFixed(0);
+      let green = (remap * 80).toFixed(0);
+      let blue = (80 + remap * 75).toFixed(0);
+      let color = "0x" + fullColorHex(red, green, blue);
+      return color;
+    },
+    Remap(value, from1, to1, from2, to2) {
+      return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
+    },
+    updateData(_model) {
+      //console.log(this.components);
+      Object.keys(_model).forEach(key => {
+        switch (_model[key].subtype) {
+          case "blood_compartment":
+            this.components[_model[key].name].sprite.tint = this.CalculateColor(
+              _model[_model[key].name].to2
+            );
+
+            this.components[_model[key].name].sprite.width =
+              this.CalculateRadius(
+                _model[_model[key].name].vol_current * 1000
+              ) * this.canvas.scaling;
+
+            this.components[_model[key].name].sprite.height =
+              this.CalculateRadius(
+                _model[_model[key].name].vol_current * 1000
+              ) * this.canvas.scaling;
+
+            //console.log(this.components[_model[key].name].text_sprite.y);
+
+            this.components[_model[key].name].text_sprite.y = this.components[
+              _model[key].name
+            ].sprite.y;
+
+            // this.components[_model[key].name].text_sprite.y =
+            //   this.components[_model[key].name].sprite.pos.y +
+            //   this.components[_model[key].name].sprite.height;
+
+            break;
+          case "pump":
+            this.components[_model[key].name].sprite.tint = this.CalculateColor(
+              _model[_model[key].name].to2
+            );
+            this.components[_model[key].name].sprite.width =
+              this.CalculateRadius(
+                _model[_model[key].name].vol_current * 1000
+              ) * this.canvas.scaling;
+
+            this.components[_model[key].name].sprite.height =
+              this.CalculateRadius(
+                _model[_model[key].name].vol_current * 1000
+              ) * this.canvas.scaling;
+            break;
+          case "gas_compartment":
+            // this.components[_model[key].name].sprite.width =
+            //   this.CalculateRadius(
+            //     _model[_model[key].name].vol_current * 1000
+            //   ) * this.canvas.scaling;
+
+            // this.components[_model[key].name].sprite.height =
+            //   this.CalculateRadius(
+            //     _model[_model[key].name].vol_current * 1000
+            //   ) * this.canvas.scaling;
+
+            break;
+        }
+      });
+    },
     processData(_components) {
       // process current model components
       Object.keys(_components).forEach(key => {
         if (_components[key].type === "component") {
           this.addComponent(_components[key].subtype, _components[key]);
         }
+      });
+    },
+    hideComponent() {
+      this.selectedComponent.sprite.visible = false;
+      this.selectedComponent.text_sprite.visible = false;
+      this.selectedComponent["hidden"] = true;
+    },
+    showHiddenComponents() {
+      Object.keys(this.components).forEach(key => {
+        this.components[key].sprite.visible = true;
+        this.components[key].text_sprite.visible = true;
       });
     },
     setDrawingMode(_mode) {
@@ -186,6 +294,7 @@ export default {
           );
           new_comp.sprite.rotation = Math.PI * 0.5;
           new_comp.text_sprite.text = _props.name;
+
           break;
         case "gas_connector": // bloodconnector
           new_comp.sprite = new PIXI.Sprite.from(
@@ -238,8 +347,8 @@ export default {
       new_comp.sprite.anchor.set(0.5);
       new_comp.text_sprite.anchor.set(0.5);
 
-      new_comp.sprite.width = 20;
-      new_comp.sprite.height = 20;
+      new_comp.sprite.width = 25;
+      new_comp.sprite.height = 25;
 
       new_comp.sprite.x = this.current_x;
       new_comp.sprite.y = this.current_syl;
@@ -258,8 +367,57 @@ export default {
         this.selectComponent(new_comp);
       });
 
+      if (new_comp.props.subtype === "blood_connector") {
+        new_comp["connector"] = {
+          line: undefined
+        };
+        this.drawConnector(new_comp);
+      }
+
       this.pixi_app.stage.addChild(new_comp.sprite);
       this.pixi_app.stage.addChild(new_comp.text_sprite);
+
+      this.components[new_comp.props.name] = new_comp;
+    },
+    updateConnectors() {
+      Object.keys(this.components).forEach(key => {
+        if (this.components[key].props.subtype === "blood_connector") {
+          this.drawConnector(this.components[key]);
+        }
+      });
+    },
+    drawConnector(_component) {
+      if (_component.connector["line"] != undefined) {
+        this.pixi_app.stage.removeChild(_component.connector.line);
+      }
+
+      _component["connector"] = {
+        x0: this.components[_component.props["comp_from"]].sprite.x,
+        y0: this.components[_component.props["comp_from"]].sprite.y,
+        x1: this.components[_component.props["comp_to"]].sprite.x,
+        y1: this.components[_component.props["comp_to"]].sprite.y,
+        line: new PIXI.Graphics(),
+        name: _component.props["name"]
+      };
+
+      _component.connector.line.lineStyle(1, 0x000000, 1);
+      // draw a shape
+      _component.connector.line.moveTo(
+        _component.connector.x0,
+        _component.connector.y0
+      );
+      _component.connector.line.lineTo(
+        _component.sprite.x,
+        _component.sprite.y
+      );
+      _component.connector.line.lineTo(
+        _component.connector.x1,
+        _component.connector.y1
+      );
+
+      if (_component.props.is_enabled) {
+        this.pixi_app.stage.addChild(_component.connector.line);
+      }
     },
     selectComponent(clickedComponent) {
       if (this.selectedComponent === clickedComponent) {
@@ -271,18 +429,29 @@ export default {
         this.selectedComponentSprite.y = clickedComponent.sprite.y;
         this.selectedComponentSprite.visible = true;
         this.$root.$emit("selected_component", clickedComponent["props"].name);
+
+        if (this.drawing_mode === 4) {
+          this.selectedComponent["hidden"] = true;
+          this.selectedComponent.sprite.visible = false;
+          this.selectedComponent.text_sprite.visible = false;
+        }
       }
     },
     moveSelectedSprite(e) {
       if ((this.selectedComponent != null) & (this.drawing_mode === 0)) {
         let pos = e.data.global;
 
+        let current_dy =
+          this.selectedComponent.text_sprite.y -
+          this.selectedComponent.sprite.y;
         this.selectedComponent.sprite.x = pos.x;
         this.selectedComponent.sprite.y = pos.y;
         this.selectedComponent.text_sprite.x = pos.x;
-        this.selectedComponent.text_sprite.y = pos.y + 20;
+        this.selectedComponent.text_sprite.y = pos.y + current_dy;
         this.selectedComponentSprite.x = pos.x;
         this.selectedComponentSprite.y = pos.y;
+
+        this.updateConnectors();
       }
     },
     initializeComponent() {
@@ -319,7 +488,7 @@ export default {
       this.selectedComponentSprite.height = 75;
       this.selectedComponentSprite.x = 10;
       this.selectedComponentSprite.y = 10;
-      this.selectedComponentSprite.alpha = 0.1;
+      this.selectedComponentSprite.alpha = 0.2;
       this.pixi_app.stage.addChild(this.selectedComponentSprite);
       this.selectedComponentSprite.tint = "0xff0000";
       this.selectedComponentSprite.visible = false;
@@ -330,7 +499,7 @@ export default {
       this.moveSprite.height = 20;
       this.moveSprite.x = 30;
       this.moveSprite.y = 30;
-      this.moveSprite.alpha = 0.1;
+      this.moveSprite.alpha = 0.2;
       this.pixi_app.stage.addChild(this.moveSprite);
       this.moveSprite.interactive = true;
       this.moveSprite.on("click", () => {
@@ -343,11 +512,50 @@ export default {
       this.turnSprite.height = 20;
       this.turnSprite.x = 30;
       this.turnSprite.y = 70;
-      this.turnSprite.alpha = 0.1;
+      this.turnSprite.alpha = 0.2;
       this.pixi_app.stage.addChild(this.turnSprite);
       this.turnSprite.interactive = true;
       this.turnSprite.on("click", () => {
         this.changeDrawingMode("turn");
+      });
+
+      this.resizeSprite = new PIXI.Sprite.from("statics/Sprites/resize.svg");
+      this.resizeSprite.anchor.set(0.5);
+      this.resizeSprite.width = 20;
+      this.resizeSprite.height = 20;
+      this.resizeSprite.x = 30;
+      this.resizeSprite.y = 110;
+      this.resizeSprite.alpha = 0.2;
+      this.pixi_app.stage.addChild(this.resizeSprite);
+      this.resizeSprite.interactive = true;
+      this.resizeSprite.on("click", () => {
+        this.changeDrawingMode("resize");
+      });
+
+      this.hideSprite = new PIXI.Sprite.from("statics/Sprites/hide.svg");
+      this.hideSprite.anchor.set(0.5);
+      this.hideSprite.width = 20;
+      this.hideSprite.height = 20;
+      this.hideSprite.x = 30;
+      this.hideSprite.y = 150;
+      this.hideSprite.alpha = 0.2;
+      this.pixi_app.stage.addChild(this.hideSprite);
+      this.hideSprite.interactive = true;
+      this.hideSprite.on("click", () => {
+        this.changeDrawingMode("hide");
+      });
+
+      this.showSprite = new PIXI.Sprite.from("statics/Sprites/show.svg");
+      this.showSprite.anchor.set(0.5);
+      this.showSprite.width = 20;
+      this.showSprite.height = 20;
+      this.showSprite.x = 30;
+      this.showSprite.y = 190;
+      this.showSprite.alpha = 0.2;
+      this.pixi_app.stage.addChild(this.showSprite);
+      this.showSprite.interactive = true;
+      this.showSprite.on("click", () => {
+        this.showHiddenComponents();
       });
 
       this.removeSprite = new PIXI.Sprite.from("statics/Sprites/remove.svg");
@@ -355,9 +563,9 @@ export default {
       this.removeSprite.width = 20;
       this.removeSprite.height = 20;
       this.removeSprite.x = 30;
-      this.removeSprite.y = 110;
-      this.removeSprite.alpha = 0.1;
-      this.pixi_app.stage.addChild(this.removeSprite);
+      this.removeSprite.y = 230;
+      this.removeSprite.alpha = 0.2;
+      //this.pixi_app.stage.addChild(this.removeSprite);
       this.removeSprite.interactive = true;
       this.removeSprite.on("click", () => {
         this.changeDrawingMode("remove");
@@ -370,21 +578,43 @@ export default {
       switch (_mode) {
         case "move":
           this.moveSprite.alpha = 1;
-          this.turnSprite.alpha = 0.1;
-          this.removeSprite.alpha = 0.1;
+          this.turnSprite.alpha = 0.2;
+          this.resizeSprite.alpha = 0.2;
+          this.removeSprite.alpha = 0.2;
+          this.hideSprite.alpha = 0.2;
           this.drawing_mode = 0;
           break;
         case "turn":
-          this.moveSprite.alpha = 0.1;
+          this.moveSprite.alpha = 0.2;
           this.turnSprite.alpha = 1;
-          this.removeSprite.alpha = 0.1;
+          this.resizeSprite.alpha = 0.2;
+          this.removeSprite.alpha = 0.2;
+          this.hideSprite.alpha = 0.2;
           this.drawing_mode = 1;
           break;
         case "remove":
-          this.moveSprite.alpha = 0.1;
-          this.turnSprite.alpha = 0.1;
+          this.moveSprite.alpha = 0.2;
+          this.turnSprite.alpha = 0.2;
+          this.resizeSprite.alpha = 0.2;
           this.removeSprite.alpha = 1;
+          this.hideSprite.alpha = 0.2;
           this.drawing_mode = 2;
+          break;
+        case "resize":
+          this.moveSprite.alpha = 0.2;
+          this.turnSprite.alpha = 0.2;
+          this.removeSprite.alpha = 0.2;
+          this.resizeSprite.alpha = 1;
+          this.hideSprite.alpha = 0.2;
+          this.drawing_mode = 3;
+          break;
+        case "hide":
+          this.moveSprite.alpha = 0.2;
+          this.turnSprite.alpha = 0.2;
+          this.removeSprite.alpha = 0.2;
+          this.resizeSprite.alpha = 0.2;
+          this.hideSprite.alpha = 1;
+          this.drawing_mode = 4;
           break;
       }
     },
@@ -395,7 +625,21 @@ export default {
       if ((e.key === "ArrowRight") & (this.drawing_mode === 1)) {
         this.selectedComponent.sprite.rotation += 0.1;
       }
+      if ((e.key === "ArrowRight") & (this.drawing_mode === 3)) {
+        this.selectedComponent.sprite.width += 1;
+        this.selectedComponent.sprite.height += 1;
+        this.selectedComponent.text_sprite.y += 0.5;
+      }
+      if ((e.key === "ArrowLeft") & (this.drawing_mode === 3)) {
+        this.selectedComponent.sprite.width -= 1;
+        this.selectedComponent.sprite.height -= 1;
+        this.selectedComponent.text_sprite.y -= 0.5;
+      }
+      if ((e.key === "x") & (this.drawing_mode === 4)) {
+        this.hideComponent();
+      }
     },
+
     resize() {
       const parent = this.pixi_app.view.parentNode;
       this.canvas.width = parent.clientWidth * 0.9;
