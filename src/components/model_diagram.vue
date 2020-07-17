@@ -271,7 +271,6 @@ export default {
         }
       });
     },
-
     showHiddenComponents() {
       Object.keys(this.components).forEach(key => {
         this.components[key].sprite.visible = true;
@@ -589,6 +588,25 @@ export default {
       this.pixi_app.stage.interactive = true;
       this.pixi_app.stage.on("pointermove", this.moveSelectedSprite);
 
+      this.resize();
+
+      this.main_circle = new PIXI.Graphics();
+
+      // Set the fill color
+      this.main_circle.beginFill(0xe0e0e0); // Red
+
+      // Draw a circle
+      this.main_circle.drawCircle(
+        this.canvas.width / 2,
+        this.canvas.height / 2,
+        this.canvas.height / 3
+      ); // drawCircle(x, y, radius)
+
+      // Applies fill to lines and shapes since the last call to beginFill.
+      this.main_circle.endFill();
+
+      this.pixi_app.stage.addChild(this.main_circle);
+
       // define the selected component sprite
       this.selectedComponentSprite = new PIXI.Sprite.from(
         "statics/Sprites/compartment-old.svg"
@@ -681,7 +699,6 @@ export default {
         this.changeDrawingMode("remove");
       });
 
-      this.resize();
       this.buildDiagram();
     },
     changeDrawingMode(_mode) {
