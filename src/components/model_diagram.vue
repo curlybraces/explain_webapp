@@ -133,9 +133,9 @@ export default {
           //console.log(_message.data.data);
           this.processData(_message.data.data);
         }
-        // if (_message.data.type === "state") {
-        //   this.updateData(_message.data.data);
-        // }
+        if (_message.data.type === "state") {
+          this.updateData(_message.data.data);
+        }
       }
     );
 
@@ -175,59 +175,93 @@ export default {
       Object.keys(_model).forEach(key => {
         switch (_model[key].subtype) {
           case "blood_compartment":
-            this.components[_model[key].name].sprite.tint = this.CalculateColor(
-              _model[_model[key].name].to2
-            );
-
-            this.components[_model[key].name].sprite.width =
-              this.CalculateRadius(
-                _model[_model[key].name].vol_current * 1000
-              ) * this.canvas.scaling;
-
-            this.components[_model[key].name].sprite.height =
-              this.CalculateRadius(
-                _model[_model[key].name].vol_current * 1000
-              ) * this.canvas.scaling;
-
-            //console.log(this.components[_model[key].name].text_sprite.y);
-
-            this.components[_model[key].name].text_sprite.y = this.components[
-              _model[key].name
-            ].sprite.y;
-
-            // this.components[_model[key].name].text_sprite.y =
-            //   this.components[_model[key].name].sprite.pos.y +
-            //   this.components[_model[key].name].sprite.height;
-
+            this.updateCompartments(_model[key]);
             break;
-          case "pump":
-            this.components[_model[key].name].sprite.tint = this.CalculateColor(
-              _model[_model[key].name].to2
-            );
-            this.components[_model[key].name].sprite.width =
-              this.CalculateRadius(
-                _model[_model[key].name].vol_current * 1000
-              ) * this.canvas.scaling;
-
-            this.components[_model[key].name].sprite.height =
-              this.CalculateRadius(
-                _model[_model[key].name].vol_current * 1000
-              ) * this.canvas.scaling;
+          case "blood_connector":
+            this.updateFlows(_model[key]);
             break;
-          case "gas_compartment":
-            // this.components[_model[key].name].sprite.width =
-            //   this.CalculateRadius(
-            //     _model[_model[key].name].vol_current * 1000
-            //   ) * this.canvas.scaling;
-
-            // this.components[_model[key].name].sprite.height =
-            //   this.CalculateRadius(
-            //     _model[_model[key].name].vol_current * 1000
-            //   ) * this.canvas.scaling;
-
+          case "valve":
+            this.updateFlows(_model[key]);
+            break;
+          case "shunt":
+            this.updateFlows(_model[key]);
             break;
         }
       });
+    },
+    updateCompartments(_compartment) {
+      this.components[_compartment.name].sprite.tint = this.CalculateColor(
+        _compartment.to2
+      );
+    },
+    updateFlows(_connector) {
+      this.components[_connector.name].current_value1 += _connector.real_flow;
+      this.components[_connector.name].current_value2 += _connector.real_flow;
+
+      if (this.components[_connector.name].current_value1 > 1) {
+        this.components[_connector.name].current_value1 = 0;
+      }
+      if (this.components[_connector.name].current_value1 < 0) {
+        this.components[_connector.name].current_value1 = 1;
+      }
+
+      if (this.components[_connector.name].current_value2 > 1) {
+        this.components[_connector.name].current_value2 = 0;
+      }
+      if (this.components[_connector.name].current_value2 < 0) {
+        this.components[_connector.name].current_value2 = 1;
+      }
+
+      let pos_start = {
+        x: this.components[_connector.comp_from].sprite.x,
+        y: this.components[_connector.comp_from].sprite.y
+      };
+      let pos_intermediate = {
+        x: this.components[_connector.name].sprite.x,
+        y: this.components[_connector.name].sprite.y
+      };
+      let pos_end = {
+        x: this.components[_connector.comp_to].sprite.x,
+        y: this.components[_connector.comp_to].sprite.y
+      };
+
+      this.components[_connector.name].length1 = Math.sqrt(
+        Math.pow(pos_intermediate.x - pos_start.x, 2) +
+          Math.pow(pos_intermediate.y - pos_start.y, 2)
+      );
+
+      this.components[_connector.name].length2 = Math.sqrt(
+        Math.pow(pos_end.x - pos_intermediate.x, 2) +
+          Math.pow(pos_end.y - pos_intermediate.y, 2)
+      );
+
+      let remap_t1 = this.Remap(
+        this.components[_connector.name].current_value1,
+        0,
+        1,
+        0,
+        this.components[_connector.name].length1
+      );
+
+      let remap_t2 = this.Remap(
+        this.components[_connector.name].current_value2,
+        0,
+        1,
+        0,
+        this.components[_connector.name].length2
+      );
+
+      let t1 = remap_t1 / this.components[_connector.name].length1;
+      this.components[_connector.name].flow_sprite1.x =
+        (1 - t1) * pos_start.x + t1 * pos_intermediate.x;
+      this.components[_connector.name].flow_sprite1.y =
+        (1 - t1) * pos_start.y + t1 * pos_intermediate.y;
+
+      let t2 = remap_t2 / this.components[_connector.name].length2;
+      this.components[_connector.name].flow_sprite2.x =
+        (1 - t2) * pos_intermediate.x + t2 * pos_end.x;
+      this.components[_connector.name].flow_sprite2.y =
+        (1 - t2) * pos_intermediate.y + t2 * pos_end.y;
     },
     processData(_components) {
       // process current model components
@@ -237,15 +271,17 @@ export default {
         }
       });
     },
-    hideComponent() {
-      this.selectedComponent.sprite.visible = false;
-      this.selectedComponent.text_sprite.visible = false;
-      this.selectedComponent["hidden"] = true;
-    },
+
     showHiddenComponents() {
       Object.keys(this.components).forEach(key => {
         this.components[key].sprite.visible = true;
         this.components[key].text_sprite.visible = true;
+        if (this.components[key].flow_sprite1 != undefined) {
+          this.components[key].flow_sprite1.visible = true;
+          this.components[key].flow_sprite2.visible = true;
+          this.components[key].connector.line.visible = true;
+        }
+        this.components[key]["hidden"] = false;
       });
     },
     setDrawingMode(_mode) {
@@ -261,7 +297,9 @@ export default {
       let new_comp = {
         sprite: null,
         text_sprite: null,
-        props: null
+        flow_sprite: null,
+        props: null,
+        hidden: false
       };
 
       new_comp.props = _props;
@@ -275,7 +313,7 @@ export default {
       switch (type) {
         case "blood_compartment": // bloodcompartment
           new_comp.sprite = new PIXI.Sprite.from(
-            "statics/Sprites/compartment.svg"
+            "statics/Sprites/compartment-old.svg"
           );
           new_comp.text_sprite.text = _props.name;
 
@@ -293,6 +331,17 @@ export default {
             "statics/Sprites/connector_current.svg"
           );
           new_comp.sprite.rotation = Math.PI * 0.5;
+
+          new_comp.flow_sprite1 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value1 = 0;
+
+          new_comp.flow_sprite2 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value2 = 0;
+
           new_comp.text_sprite.text = _props.name;
 
           break;
@@ -316,12 +365,33 @@ export default {
             "statics/Sprites/valve_current.svg"
           );
 
+          new_comp.flow_sprite1 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value1 = 0;
+
+          new_comp.flow_sprite2 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value2 = 0;
+
           new_comp.text_sprite.text = _props.name;
           break;
         case "shunt": // valve
           new_comp.sprite = new PIXI.Sprite.from(
             "statics/Sprites/shunt_current.svg"
           );
+
+          new_comp.flow_sprite1 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value1 = 0;
+
+          new_comp.flow_sprite2 = new PIXI.Sprite.from(
+            "statics/Sprites/compartment.svg"
+          );
+          new_comp.current_value2 = 0;
+
           new_comp.sprite.rotation = Math.PI * 0.5;
           new_comp.text_sprite.text = _props.name;
           break;
@@ -350,6 +420,22 @@ export default {
       new_comp.sprite.width = 25;
       new_comp.sprite.height = 25;
 
+      if (new_comp.flow_sprite1 != null) {
+        new_comp.flow_sprite1.width = 10;
+        new_comp.flow_sprite1.height = 10;
+        new_comp.flow_sprite1.anchor.set(0.5);
+        new_comp.flow_sprite1.x = this.current_x;
+        new_comp.flow_sprite1.y = this.current_syl;
+        this.pixi_app.stage.addChild(new_comp.flow_sprite1);
+
+        new_comp.flow_sprite2.width = 10;
+        new_comp.flow_sprite2.height = 10;
+        new_comp.flow_sprite2.anchor.set(0.5);
+        new_comp.flow_sprite2.x = this.current_x;
+        new_comp.flow_sprite2.y = this.current_syl;
+        this.pixi_app.stage.addChild(new_comp.flow_sprite2);
+      }
+
       new_comp.sprite.x = this.current_x;
       new_comp.sprite.y = this.current_syl;
 
@@ -367,7 +453,11 @@ export default {
         this.selectComponent(new_comp);
       });
 
-      if (new_comp.props.subtype === "blood_connector") {
+      if (
+        new_comp.props.subtype === "blood_connector" ||
+        new_comp.props.subtype === "valve" ||
+        new_comp.props.subtype === "shunt"
+      ) {
         new_comp["connector"] = {
           line: undefined
         };
@@ -375,13 +465,18 @@ export default {
       }
 
       this.pixi_app.stage.addChild(new_comp.sprite);
+
       this.pixi_app.stage.addChild(new_comp.text_sprite);
 
       this.components[new_comp.props.name] = new_comp;
     },
     updateConnectors() {
       Object.keys(this.components).forEach(key => {
-        if (this.components[key].props.subtype === "blood_connector") {
+        if (
+          this.components[key].props.subtype === "blood_connector" ||
+          this.components[key].props.subtype === "valve" ||
+          this.components[key].props.subtype === "shunt"
+        ) {
           this.drawConnector(this.components[key]);
         }
       });
@@ -415,7 +510,7 @@ export default {
         _component.connector.y1
       );
 
-      if (_component.props.is_enabled) {
+      if (_component.hidden === false) {
         this.pixi_app.stage.addChild(_component.connector.line);
       }
     },
@@ -434,6 +529,13 @@ export default {
           this.selectedComponent["hidden"] = true;
           this.selectedComponent.sprite.visible = false;
           this.selectedComponent.text_sprite.visible = false;
+          if (this.selectedComponent.flow_sprite1 != undefined) {
+            this.selectedComponent.flow_sprite1.visible = false;
+            this.selectedComponent.flow_sprite2.visible = false;
+            this.selectedComponent.connector.line.visible = false;
+          }
+          this.selectedComponent = null;
+          this.selectedComponentSprite.visible = false;
         }
       }
     },
@@ -448,6 +550,14 @@ export default {
         this.selectedComponent.sprite.y = pos.y;
         this.selectedComponent.text_sprite.x = pos.x;
         this.selectedComponent.text_sprite.y = pos.y + current_dy;
+        if (this.selectedComponent.flow_sprite1 != null) {
+          this.selectedComponent.flow_sprite1.x = pos.x;
+          this.selectedComponent.flow_sprite1.y = pos.y;
+
+          this.selectedComponent.flow_sprite2.x = pos.x;
+          this.selectedComponent.flow_sprite2.y = pos.y;
+        }
+
         this.selectedComponentSprite.x = pos.x;
         this.selectedComponentSprite.y = pos.y;
 

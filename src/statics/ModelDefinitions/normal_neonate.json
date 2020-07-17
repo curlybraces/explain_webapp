@@ -1132,7 +1132,7 @@
       "comp_to": "LA",
       "res_forward_baseline": 860,
       "res_backward_baseline": 860,
-      "is_enabled": false,
+      "is_enabled": true,
       "no_flow": false,
       "no_backflow": false,
       "in_current": 0.0,
